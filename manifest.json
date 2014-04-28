@@ -1,9 +1,9 @@
 {
-  "name": "CHANGE THIS : Extension boilerplate",
+  "name": "BabelFrog",
   "version": "0.0.1",
   "manifest_version": 2,
-  "description": "This extension was created with the awesome extensionizr.com",
-  "homepage_url": "http://extensionizr.com",
+  "description": "Learn languages by easily translating selected text",
+  "homepage_url": "http://github.com/dergachev/babelfrog",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -14,27 +14,21 @@
     "scripts": [
       "src/bg/background.js"
     ],
-    "persistent": true
+    "persistent": false
   },
   "options_page": "src/options_custom/index.html",
   "browser_action": {
     "default_icon": "icons/icon19.png",
-    "default_title": "browser action demo",
-    "default_popup": "src/browser_action/browser_action.html"
+    "default_title": "browser action demo"
   },
   "permissions": [
-    "contextMenus",
-    "tabs",
-    "https://*/*,http://*/*"
+    "activeTab"
   ],
-  "content_scripts": [
-    {
-      "matches": [
-        "https://www.google.com/*"
-      ],
-      "js": [
-        "src/inject/inject.js"
-      ]
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Alt+F"
+      }
     }
-  ]
+  }
 }
