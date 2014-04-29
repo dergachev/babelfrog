@@ -5,9 +5,9 @@
   "description": "Learn languages by easily translating selected text",
   "homepage_url": "http://github.com/dergachev/babelfrog",
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "icons/frog16.png",
+    "48": "icons/frog48.png",
+    "128": "icons/frog128.png"
   },
   "default_locale": "en",
   "background": {
@@ -18,8 +18,11 @@
   },
   "options_page": "src/options_custom/index.html",
   "browser_action": {
-    "default_icon": "icons/icon19.png",
-    "default_title": "browser action demo"
+    "default_icon": {
+      "19": "icons/frog19.png",
+      "38": "icons/frog38.png"
+    },
+    "default_title": "BabelFrog"
   },
   "permissions": [
     "activeTab"
