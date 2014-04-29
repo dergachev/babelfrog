@@ -1,134 +1,151 @@
-// SAMPLE
+this.languageOptions = function(){
+  var featured = {
+    'en': 'English',
+    'fr': 'French',
+    'es': 'Spanish',
+    'ru': 'Russian',
+  };
+
+  var languages = {
+    'af': 'Afrikaans',
+    'sq': 'Albanian',
+    'ar': 'Arabic',
+    'hy': 'Armenian',
+    'az': 'Azerbaijani',
+    'eu': 'Basque',
+    'be': 'Belarusian',
+    'bn': 'Bengali',
+    'bs': 'Bosnian',
+    'bg': 'Bulgarian',
+    'ca': 'Catalan',
+    'ceb': 'Cebuano',
+    'zh-CN': 'Chinese',
+    'hr': 'Croatian',
+    'cs': 'Czech',
+    'da': 'Danish',
+    'nl': 'Dutch',
+    'en': 'English',
+    'eo': 'Esperanto',
+    'et': 'Estonian',
+    'tl': 'Filipino',
+    'fi': 'Finnish',
+    'fr': 'French',
+    'gl': 'Galician',
+    'ka': 'Georgian',
+    'de': 'German',
+    'el': 'Greek',
+    'gu': 'Gujarati',
+    'ht': 'Haitian Creole',
+    'ha': 'Hausa',
+    'iw': 'Hebrew',
+    'hi': 'Hindi',
+    'hmn': 'Hmong',
+    'hu': 'Hungarian',
+    'is': 'Icelandic',
+    'ig': 'Igbo',
+    'id': 'Indonesian',
+    'ga': 'Irish',
+    'it': 'Italian',
+    'ja': 'Japanese',
+    'jw': 'Javanese',
+    'kn': 'Kannada',
+    'km': 'Khmer',
+    'ko': 'Korean',
+    'lo': 'Lao',
+    'la': 'Latin',
+    'lv': 'Latvian',
+    'lt': 'Lithuanian',
+    'mk': 'Macedonian',
+    'ms': 'Malay',
+    'mt': 'Maltese',
+    'mi': 'Maori',
+    'mr': 'Marathi',
+    'mn': 'Mongolian',
+    'ne': 'Nepali',
+    'no': 'Norwegian',
+    'fa': 'Persian',
+    'pl': 'Polish',
+    'pt': 'Portuguese',
+    'pa': 'Punjabi',
+    'ro': 'Romanian',
+    'ru': 'Russian',
+    'sr': 'Serbian',
+    'sk': 'Slovak',
+    'sl': 'Slovenian',
+    'so': 'Somali',
+    'es': 'Spanish',
+    'sw': 'Swahili',
+    'sv': 'Swedish',
+    'ta': 'Tamil',
+    'te': 'Telugu',
+    'th': 'Thai',
+    'tr': 'Turkish',
+    'uk': 'Ukrainian',
+    'ur': 'Urdu',
+    'vi': 'Vietnamese',
+    'cy': 'Welsh',
+    'yi': 'Yiddish',
+    'yo': 'Yoruba',
+    'zu': 'Zulu'
+  };
+
+  var ret = [];
+  for(var code in featured) {
+    ret.push( { value: code, text: languages[code], group: 'Featured'});
+  }
+  for(var code in languages) {
+    ret.push( { value: code, text: languages[code], group: 'All'});
+  }
+  return {
+      "groups": [
+          "Featured", "All",
+      ],
+      "values": ret
+  }
+}
+
 this.manifest = {
     "name": "BabelFrog",
     "icon": "../../icons/frog48.png",
     "settings": [
         {
             "tab": i18n.get("information"),
-            "group": i18n.get("login"),
-            "name": "username",
-            "type": "text",
-            "label": i18n.get("username"),
-            "text": i18n.get("x-characters")
+            "group": i18n.get("languages"),
+            "name": "srcLang",
+            "type": "popupButton",
+            "label": "Source language",
+            "options": this.languageOptions(),
         },
         {
             "tab": i18n.get("information"),
-            "group": i18n.get("login"),
-            "name": "password",
-            "type": "text",
-            "label": i18n.get("password"),
-            "text": i18n.get("x-characters-pw"),
-            "masked": true
+            "group": i18n.get("languages"),
+            "name": "targetLang",
+            "type": "popupButton",
+            "label": "Target language",
+            "options": this.languageOptions(),
         },
         {
             "tab": i18n.get("information"),
-            "group": i18n.get("login"),
+            "group": i18n.get("Google Translate"),
+            "name": "googleApiKey",
+            "type": "text",
+            "label": i18n.get("API Key"),
+            // "text": i18n.get("x-characters")
+        },
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("Google Translate"),
             "name": "myDescription",
             "type": "description",
             "text": i18n.get("description")
         },
         {
             "tab": i18n.get("information"),
-            "group": i18n.get("logout"),
-            "name": "myCheckbox",
+            "group": i18n.get("Google Translate"),
+            "name": "vocalize",
             "type": "checkbox",
-            "label": i18n.get("enable")
-        },
-        {
-            "tab": i18n.get("information"),
-            "group": i18n.get("logout"),
-            "name": "myButton",
-            "type": "button",
-            "label": i18n.get("disconnect"),
-            "text": i18n.get("logout")
-        },
-        {
-            "tab": "Details",
-            "group": "Sound",
-            "name": "noti_volume",
-            "type": "slider",
-            "label": "Notification volume:",
-            "max": 1,
-            "min": 0,
-            "step": 0.01,
-            "display": true,
-            "displayModifier": function (value) {
-                return (value * 100).floor() + "%";
-            }
-        },
-        {
-            "tab": "Details",
-            "group": "Sound",
-            "name": "sound_volume",
-            "type": "slider",
-            "label": "Sound volume:",
-            "max": 100,
-            "min": 0,
-            "step": 1,
-            "display": true,
-            "displayModifier": function (value) {
-                return value + "%";
-            }
-        },
-        {
-            "tab": "Details",
-            "group": "Food",
-            "name": "myPopupButton",
-            "type": "popupButton",
-            "label": "Soup 1 should be:",
-            "options": {
-                "groups": [
-                    "Hot", "Cold",
-                ],
-                "values": [
-                    {
-                        "value": "hot",
-                        "text": "Very hot",
-                        "group": "Hot",
-                    },
-                    {
-                        "value": "Medium",
-                        "group": 1,
-                    },
-                    {
-                        "value": "Cold",
-                        "group": 2,
-                    },
-                    ["Non-existing"]
-                ],
-            },
-        },
-        {
-            "tab": "Details",
-            "group": "Food",
-            "name": "myListBox",
-            "type": "listBox",
-            "label": "Soup 2 should be:",
-            "options": [
-                ["hot", "Hot and yummy"],
-                ["cold"]
-            ]
-        },
-        {
-            "tab": "Details",
-            "group": "Food",
-            "name": "myRadioButtons",
-            "type": "radioButtons",
-            "label": "Soup 3 should be:",
-            "options": [
-                ["hot", "Hot and yummy"],
-                ["cold"]
-            ]
+            "label": i18n.get("Pronounce word in source language")
         }
-    ],
-    "alignment": [
-        [
-            "username",
-            "password"
-        ],
-        [
-            "noti_volume",
-            "sound_volume"
-        ]
     ]
+
 };
