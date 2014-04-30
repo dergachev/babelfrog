@@ -52,8 +52,13 @@ gotGreek.init = function(config){
 // TODO: update bookmarklet index.html to call boot in the new style, pass in API key
 gotGreek.boot = function(config){
 
-  if (typeof config.performRequest === "undefined") {
-    config.performRequest = gotGreek.engines.googleTranslateJSONP;
+  if (typeof config.googleTranslateJsonp === "undefined") {
+    // default to true to support bookmarklet case
+    config.googleTranslateJsonp = true;
+  }
+
+  if (typeof config.engine === "undefined") {
+    config.engine = gotGreek.engines.googleTranslate;
   }
 
   if (typeof config.successCallback === "undefined") {
@@ -203,8 +208,12 @@ gotGreek.translateListener = function(event, config){
     }
 
     //send request to Google
-    config.performRequest(currentJob.text, config, config.successCallback, config.errorCallback);
+    gotGreek.invokeTranslationEngine(currentJob, config);
   }
+}
+
+gotGreek.invokeTranslationEngine = function(currentJob, config){
+  config.engine(currentJob.text, config);
 }
 
 //============================================================================
@@ -214,11 +223,11 @@ gotGreek.translateListener = function(event, config){
 gotGreek.engines = {};
 
 // works well for bookmarklet, needs (paid) API key
-gotGreek.engines.googleTranslateJSONP = function(sourceText, config){
+gotGreek.engines.googleTranslate = function(sourceText, config){
   jQuery.ajax({
     url:'https://www.googleapis.com/language/translate/v2',
     type: 'GET',
-    dataType: 'jsonp',
+    dataType: config.googleTranslateJsonp ? 'jsonp' : null,
     success: function(response){
       if (response.data && response.data.translations) {
         config.successCallback(response.data.translations[0].translatedText);
@@ -240,38 +249,7 @@ gotGreek.engines.googleTranslateJSONP = function(sourceText, config){
       key: config.googleApiKey,
       source: config.source,
       target: config.target,
-      q: sourceText,
+      q: sourceText
     }
   });
 }
-
-gotGreek.engines.googleTranslateAJAX = function(sourceText, config, successCallback, errorCallback) {
-  jQuery.ajax({
-    url:'https://www.googleapis.com/language/translate/v2',
-    type: 'GET',
-    success: function(response){
-      if (response.data && response.data.translations) {
-        successCallback(response.data.translations[0].translatedText);
-        return;
-      }
-
-      // Google Translate reports 200 in case of error messages
-      if (response.error){
-        errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
-      }
-      else {
-        errorCallback('Google Translate: Uknown problem');
-      }
-    },
-    error: function(xhr, status){
-      errorCallback("Google Translate XHR error: <br/>"  + status);
-    },
-    data: {
-      key: config.googleApiKey,
-      source: config.source,
-      target: config.target,
-      q: sourceText,
-    }
-  });
-}
-

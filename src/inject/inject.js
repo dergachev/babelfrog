@@ -13,14 +13,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }
   }
 
-
   jQuery(function($){
     gotGreek.boot({
       source: request.srcLang,
       target: request.targetLang,
-      performRequest: gotGreek.engines.googleTranslateAJAX,
       successCallback: extensionSuccessCallback,
-      googleApiKey: request.googleApiKey
+      googleApiKey: request.googleApiKey,
+      googleTranslateJsonp: false
     });
   });
 
