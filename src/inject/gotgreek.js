@@ -1,10 +1,4 @@
 var gotGreek = function(){
-	var	config = {
-			googleApiKey:'AIzaSyAICISSmAHfsclKJ4eu5UtbhhtWMLUqxcY',
-			googleTranslateUrl:'https://www.googleapis.com/language/translate/v2',
-			source: '',
-			target: '',
-  };
 
   var currentJob = {
     text: '',
@@ -16,7 +10,7 @@ var gotGreek = function(){
 
   var cache = {};
 
-	var init = function(){
+	var init = function(config){
 		rangy.init();
 
     // support alt-clicking on links to translate them
@@ -38,13 +32,15 @@ var gotGreek = function(){
     jQuery('body').mouseup(function(event){
       // Due to race condition triggered by re-clicking on existing selection,
       // we need to add a tiny timeout; see https://code.google.com/p/rangy/issues/detail?id=175
-      window.setTimeout(function(){translateListener(event)}, 10);
+      window.setTimeout(function(){
+        translateListener(event, config)
+      }, 10);
     });
 
     jQuery('body').trigger({ type: 'mouseup', button: 0 });
 	};
 
-	var translateListener = function(event){
+	var translateListener = function(event, config){
     // only pay attention to left-clicks
 		if (event.button!==0) {
       return;
@@ -95,37 +91,16 @@ var gotGreek = function(){
 			}
 
 			//send request to Google
-			jQuery.ajax({
-				url: config.googleTranslateUrl,
-				type: 'GET',
-				dataType: 'jsonp',
-				success: function(response){
-          if (response.data && response.data.translations) {
-            currentJob.translation = response.data.translations[0].translatedText;
-            cache[currentJob.text]=currentJob.translation;
-          }
-          else if (response.error){
-            currentJob.translation = 'Google Translate Error ' + response.error.code + ': <br/>' + response.error.message;
-          }
-          else {
-            currentJob.translation = 'Google Translate: Unknown problem';
-          }
-				  showTooltip(currentJob.text, currentJob.translation, currentJob.x, currentJob.y);
-        },
-        error: function(xhr, status){
-          currentJob.translation = "Google Translate XHR error";
-				  showTooltip(currentJob.text, currentJob.translation, currentJob.x, currentJob.y);
-          console.log(xhr);
-        },
-				data: {
-					key: config.googleApiKey,
-					source: config.source,
-					target: config.target,
-					q: currentJob.text,
-				}
-			});
+      config.performRequest(currentJob.text, config, function(translation){
+          currentJob.translation = translation;
+          cache[currentJob.text] = currentJob.translation;
+          showTooltip(currentJob.text, currentJob.translation, currentJob.x, currentJob.y);
+      }, function(errorMessage){
+        showMessage(errorMessage);
+      });
 		}
 	};
+
 
   var showTooltip = function(text, translation, x, y){
     hideTooltip();
@@ -181,11 +156,45 @@ var gotGreek = function(){
 	 * The public interface of gotGreek.
 	*/
 	return {
-		boot: function(source, target){
-      config.source = source;
-      config.target = target;
+		boot: function(config){
+      // TODO: update bookmarklet index.html to call boot in the new style, pass in API key
+      var googleTranslateJSONP = function(sourceText, config, successCallback, errorCallback) {
+        jQuery.ajax({
+          url:'https://www.googleapis.com/language/translate/v2',
+          type: 'GET',
+          dataType: 'jsonp',
+          success: function(response){
+            if (response.data && response.data.translations) {
+              successCallback(response.data.translations[0].translatedText);
+              return;
+            }
+
+            // Google Translate reports 200 in case of error messages
+            if (response.error){
+              errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
+            }
+            else {
+              errorCallback('Google Translate: Uknown problem');
+            }
+          },
+          error: function(xhr, status){
+            errorCallback("Google Translate XHR error: <br/>"  + status);
+          },
+          data: {
+            key: config.googleApiKey,
+            source: config.source,
+            target: config.target,
+            q: sourceText,
+          }
+        });
+      }
+
+      if (typeof config.performRequest === "undefined") {
+        config.performRequest = googleTranslateJSONP;
+      }
+
       showMessage('Loading complete, select a phrase to translate it. Alt-click a link to translate its text.');
-      init();
+      init(config);
 		}
 	};
 }();

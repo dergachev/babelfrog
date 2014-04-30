@@ -15,7 +15,8 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     chrome.tabs.sendMessage(tab.id, {
       msgId: "bootBabelFrog",
       srcLang: settings.get('srcLang'),
-      targetLang: settings.get('targetLang')
+      targetLang: settings.get('targetLang'),
+      googleApiKey: settings.get('googleApiKey')
     });
   });
 });
