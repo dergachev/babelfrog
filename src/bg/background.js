@@ -16,7 +16,18 @@ chrome.browserAction.onClicked.addListener(function(tab) {
       msgId: "bootBabelFrog",
       srcLang: settings.get('srcLang'),
       targetLang: settings.get('targetLang'),
-      googleApiKey: settings.get('googleApiKey')
+      googleApiKey: settings.get('googleApiKey'),
+      vocalize: settings.get('vocalize')
     });
   });
+});
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  // flag to designate type of message
+  if (request.msgId != 'vocalize') {
+    return;
+  }
+  var text = encodeURIComponent(request.text);
+  var audio = new Audio('http://translate.google.com/translate_tts?ie=UTF-8&tl=fr&total=1&idx=0&textlen=77&client=t&prev=input&q=' + text);
+  audio.play();
 });
