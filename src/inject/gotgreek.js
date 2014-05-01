@@ -253,3 +253,46 @@ gotGreek.engines.googleTranslate = function(sourceText, config){
     }
   });
 }
+
+// Potentially illegitimate use of non-public API; but many other extensions use it too.
+gotGreek.engines.googleTranslateFree = function(sourceText, config){
+  jQuery.ajax({
+    url:'http://translate.google.com/translate_a/t',
+    type: 'GET',
+    success: function(response){
+      // This URL returns invalid JSON, so we need to sanitize it first
+      // [[["dreams","rêves","",""]],[["verb",["dream"],[["dream",["rêver","faire un rêve"],,0.32465246]],"rêver",2]],"fr",,[["dreams",[1],true,false,986,0,1,0]],[["rêves",1,[["dreams",986,true,false],["dream",0,true,false]],[[0,5]],"rêves"]],,[,"rêve",[10],,true],[],17]
+      response = response.replace(/,(?=,)/g, ',null');
+      response = response.replace(/,\]/g, ',null]');
+      response = response.replace(/\[,/g, '[null,');
+      response = JSON.parse(response);
+      if (response && response[0] && response[0][0] && response[0][0][0]){
+        config.successCallback(response[0][0][0]);
+        return;
+      }
+
+      // Google Translate reports 200 in case of error messages
+      if (response.error){
+        config.errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
+      }
+      else {
+        config.errorCallback('Google Translate: unable to parse response.');
+      }
+    },
+    error: function(xhr, status){
+      config.errorCallback("Google Translate XHR error: <br/>"  + status);
+    },
+    data: {
+      client:'t',
+      hl:'en',
+      sc:'2',
+      ie:'UTF-8',
+      oe:'UTF-8',
+      ssel:'0',
+      tsel:'0',
+      sl: config.source,
+      tl: config.target,
+      q: sourceText
+    }
+  });
+}

@@ -1,7 +1,7 @@
 var settings = new Store("settings", {
     "srcLang": "fr",
     "targetLang": "en",
-    "googleApiKey": "AIzaSyAICISSmAHfsclKJ4eu5UtbhhtWMLUqxcY"
+    "googleApiKey": ""
 });
 
 /**

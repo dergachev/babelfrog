@@ -2,7 +2,7 @@
   "name": "BabelFrog",
   "version": "0.0.1",
   "manifest_version": 2,
-  "description": "Learn languages by easily translating selected text",
+  "description": "Helps you learn a new language by translating selected text",
   "homepage_url": "http://github.com/dergachev/babelfrog",
   "icons": {
     "16": "icons/frog16.png",
@@ -26,7 +26,8 @@
     "default_title": "BabelFrog"
   },
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "http://translate.google.com/"
   ],
   "commands": {
     "_execute_browser_action": {

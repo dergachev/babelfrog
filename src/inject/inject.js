@@ -24,6 +24,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     gotGreek.boot({
       source: request.srcLang,
       target: request.targetLang,
+      engine: gotGreek.engines.googleTranslateFree,
       successCallback: extensionSuccessCallback,
       googleApiKey: request.googleApiKey,
       googleTranslateJsonp: false
