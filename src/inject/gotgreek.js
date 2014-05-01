@@ -65,7 +65,7 @@ gotGreek.boot = function(config){
     config.successCallback = gotGreek.callbacks.standardSuccessCallback;
   }
 
-  if (typeof config.successCallback === "undefined") {
+  if (typeof config.errorCallback === "undefined") {
     config.errorCallback = gotGreek.callbacks.standardErrorCallback;
   }
 
@@ -239,7 +239,7 @@ gotGreek.engines.googleTranslate = function(sourceText, config){
         config.errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
       }
       else {
-        config.errorCallback('Google Translate: Uknown problem');
+        config.errorCallback('Google Translate error: unable to parse response.');
       }
     },
     error: function(xhr, status){
