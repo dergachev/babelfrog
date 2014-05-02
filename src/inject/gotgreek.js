@@ -4,6 +4,9 @@ gotGreek = function(){};
 // State
 //============================================================================
 
+// Default options
+gotGreek.config = {};
+
 gotGreek.currentJob = {
   text: '',
   translation: '',
@@ -18,7 +21,7 @@ gotGreek.cache = {};
 // Initialization
 //============================================================================
 
-gotGreek.init = function(config){
+gotGreek.init = function(){
   rangy.init();
 
   // support alt-clicking on links to translate them
@@ -41,36 +44,47 @@ gotGreek.init = function(config){
     // Due to race condition triggered by re-clicking on existing selection,
     // we need to add a tiny timeout; see https://code.google.com/p/rangy/issues/detail?id=175
     window.setTimeout(function(){
-      gotGreek.translateListener(event, config)
+      gotGreek.translateListener(event);
     }, 10);
   });
 
   jQuery('body').trigger({ type: 'mouseup', button: 0 });
 };
 
+gotGreek.setConfig = function(config){
+  var defaultConfig = {
+    googleTranslateJsonp: true,
+    engine: gotGreek.engines.googleTranslateFree,
+    successCallback: gotGreek.callbacks.standardSuccesCallback,
+    errorCallback: gotGreek.callbacks.standardErrorCallback,
+  };
+
+  gotGreek.config = jQuery.extend({}, defaultConfig, config);
+  console.log(gotGreek.config);
+  return;
+
+  if (typeof gotGreek.config.googleTranslateJsonp === "undefined") {
+    // default to true to support bookmarklet case
+    gotGreek.config.googleTranslateJsonp = true;
+  }
+
+  if (typeof gotGreek.config.engine === "undefined") {
+    gotGreek.config.engine = gotGreek.engines.googleTranslate;
+  }
+
+  if (typeof gotGreek.config.successCallback === "undefined") {
+    gotGreek.config.successCallback = gotGreek.callbacks.standardSuccessCallback;
+  }
+
+  if (typeof gotGreek.config.errorCallback === "undefined") {
+    gotGreek.config.errorCallback = gotGreek.callbacks.standardErrorCallback;
+  }
+}
 
 // TODO: update bookmarklet index.html to call boot in the new style, pass in API key
-gotGreek.boot = function(config){
-
-  if (typeof config.googleTranslateJsonp === "undefined") {
-    // default to true to support bookmarklet case
-    config.googleTranslateJsonp = true;
-  }
-
-  if (typeof config.engine === "undefined") {
-    config.engine = gotGreek.engines.googleTranslate;
-  }
-
-  if (typeof config.successCallback === "undefined") {
-    config.successCallback = gotGreek.callbacks.standardSuccessCallback;
-  }
-
-  if (typeof config.errorCallback === "undefined") {
-    config.errorCallback = gotGreek.callbacks.standardErrorCallback;
-  }
-
+gotGreek.boot = function(){
+  gotGreek.init();
   gotGreek.showMessage('Loading complete, select a phrase to translate it. Alt-click a link to translate its text.');
-  gotGreek.init(config);
 },
 
 
@@ -154,7 +168,7 @@ gotGreek.expandToWordBoundary = function(range){
 // Listener
 //============================================================================
 
-gotGreek.translateListener = function(event, config){
+gotGreek.translateListener = function(event){
 
   var currentJob = gotGreek.currentJob;
 
@@ -208,12 +222,12 @@ gotGreek.translateListener = function(event, config){
     }
 
     //send request to Google
-    gotGreek.invokeTranslationEngine(currentJob, config);
+    gotGreek.invokeTranslationEngine(currentJob);
   }
 }
 
-gotGreek.invokeTranslationEngine = function(currentJob, config){
-  config.engine(currentJob.text, config);
+gotGreek.invokeTranslationEngine = function(currentJob){
+  gotGreek.config.engine(currentJob.text);
 }
 
 //============================================================================
@@ -223,39 +237,39 @@ gotGreek.invokeTranslationEngine = function(currentJob, config){
 gotGreek.engines = {};
 
 // works well for bookmarklet, needs (paid) API key
-gotGreek.engines.googleTranslate = function(sourceText, config){
+gotGreek.engines.googleTranslate = function(sourceText){
   jQuery.ajax({
     url:'https://www.googleapis.com/language/translate/v2',
     type: 'GET',
-    dataType: config.googleTranslateJsonp ? 'jsonp' : null,
+    dataType: gotGreek.config.googleTranslateJsonp ? 'jsonp' : null,
     success: function(response){
       if (response.data && response.data.translations) {
-        config.successCallback(response.data.translations[0].translatedText);
+        gotGreek.config.successCallback(response.data.translations[0].translatedText);
         return;
       }
 
       // Google Translate reports 200 in case of error messages
       if (response.error){
-        config.errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
+        gotGreek.config.errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
       }
       else {
-        config.errorCallback('Google Translate error: unable to parse response.');
+        gotGreek.config.errorCallback('Google Translate error: unable to parse response.');
       }
     },
     error: function(xhr, status){
-      config.errorCallback("Google Translate XHR error: <br/>"  + status);
+      gotGreek.config.errorCallback("Google Translate XHR error: <br/>"  + status);
     },
     data: {
-      key: config.googleApiKey,
-      source: config.source,
-      target: config.target,
+      key: gotGreek.config.googleApiKey,
+      source: gotGreek.config.source,
+      target: gotGreek.config.target,
       q: sourceText
     }
   });
 }
 
 // Potentially illegitimate use of non-public API; but many other extensions use it too.
-gotGreek.engines.googleTranslateFree = function(sourceText, config){
+gotGreek.engines.googleTranslateFree = function(sourceText){
   jQuery.ajax({
     url:'http://translate.google.com/translate_a/t',
     type: 'GET',
@@ -267,20 +281,20 @@ gotGreek.engines.googleTranslateFree = function(sourceText, config){
       response = response.replace(/\[,/g, '[null,');
       response = JSON.parse(response);
       if (response && response[0] && response[0][0] && response[0][0][0]){
-        config.successCallback(response[0][0][0]);
+        gotGreek.config.successCallback(response[0][0][0]);
         return;
       }
 
       // Google Translate reports 200 in case of error messages
       if (response.error){
-        config.errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
+        gotGreek.config.errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
       }
       else {
-        config.errorCallback('Google Translate: unable to parse response.');
+        gotGreek.config.errorCallback('Google Translate: unable to parse response.');
       }
     },
     error: function(xhr, status){
-      config.errorCallback("Google Translate XHR error: <br/>"  + status);
+      gotGreek.config.errorCallback("Google Translate XHR error: <br/>"  + status);
     },
     data: {
       client:'t',
@@ -290,8 +304,8 @@ gotGreek.engines.googleTranslateFree = function(sourceText, config){
       oe:'UTF-8',
       ssel:'0',
       tsel:'0',
-      sl: config.source,
-      tl: config.target,
+      sl: gotGreek.config.source,
+      tl: gotGreek.config.target,
       q: sourceText
     }
   });

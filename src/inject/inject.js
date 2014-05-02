@@ -4,31 +4,50 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return;
   }
 
-  /**
-   * Override standardSuccesCallback to also play audio.
-   *
-   **/
-  var extensionSuccessCallback = function(translation) {
-    gotGreek.callbacks.standardSuccessCallback(translation);
-    if (request.vocalize) {
-      // vocalize must be run from background.js
-      chrome.runtime.sendMessage({msgId: "vocalize", text: gotGreek.currentJob.text});
-    }
-  }
 
   /**
    * Run BabelFish.
    *
    **/
   jQuery(function($){
-    gotGreek.boot({
-      source: request.srcLang,
-      target: request.targetLang,
-      engine: gotGreek.engines.googleTranslateFree,
-      successCallback: extensionSuccessCallback,
-      googleApiKey: request.googleApiKey,
-      googleTranslateJsonp: false
-    });
+    gotGreek.setConfig(makeConfig(request.config));
+    gotGreek.boot(); 
   });
 
+});
+
+/*
+ * Maps chrome extension config to gotGreek config
+ */
+function makeConfig(config){
+
+  // Override standardSuccesCallback to also play audio.
+  var extensionSuccessCallback = function(translation) {
+    gotGreek.callbacks.standardSuccessCallback(translation);
+    if (gotGreek.config.vocalize) {
+      // vocalize must be run from background.js
+      chrome.runtime.sendMessage({msgId: "vocalize", text: gotGreek.currentJob.text});
+    }
+  }
+  var ret = {
+    source: config.srcLang,
+    target: config.targetLang,
+    engine: gotGreek.engines.googleTranslateFree, // TODO: make this an option in the UI
+    successCallback: extensionSuccessCallback,
+    googleApiKey: config.googleApiKey,
+    googleTranslateJsonp: false,
+    vocalize: config.vocalize
+  }
+  return ret;
+}
+
+/**
+ * Listener for changes to gotGreek config
+ */
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  // flag to designate type of message
+  if (request.msgId != 'reconfigBabelFrog') {
+    return;
+  }
+  gotGreek.setConfig(makeConfig(request.config));
 });

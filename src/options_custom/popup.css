@@ -1,0 +1,25 @@
+body {
+  width: 600px;
+}
+
+#content {
+  position: static;
+  width: auto;
+}
+
+#content .tab-content {
+    display: block;
+    position: static;
+    width: auto;
+    padding: 20px;
+    padding-top: 15px;
+}
+
+#search-result-container, 
+#search, 
+#tab-container,
+h1,
+h2,
+#sidebar {
+  display: none !important;
+}

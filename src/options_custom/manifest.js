@@ -126,7 +126,33 @@ this.manifest = {
         },
         {
             "tab": i18n.get("information"),
-            "group": i18n.get("Google Translate"),
+            "group": i18n.get("Features"),
+            "name": "vocalize",
+            "type": "checkbox",
+            "label": i18n.get("Pronounce word in source language")
+        },
+        /*
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("Translation Engine"),
+            "name": "translationEngine",
+            "type": "radioButtons",
+            "options": [
+              { value: "google_free", text: i18n.get("Google Translate (Free)")},
+              { value: "google_api", text: i18n.get("Google Translate (Paid with API key)")},
+              { value: "bing", text: i18n.get("Bing Translator")},
+            ]
+        },
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("Google Translate (Free)"),
+            "name": "myDescription",
+            "type": "description",
+            "text": i18n.get("Please choose the translation engine you'd like to use."),
+        },
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("Google Translate (Free)"),
             "name": "googleApiKey",
             "type": "text",
             "label": i18n.get("API Key"),
@@ -134,18 +160,27 @@ this.manifest = {
         },
         {
             "tab": i18n.get("information"),
-            "group": i18n.get("Google Translate"),
+            "group": i18n.get("Translation Engine"),
             "name": "myDescription",
             "type": "description",
             "text": i18n.get("description")
         },
         {
             "tab": i18n.get("information"),
-            "group": i18n.get("Google Translate"),
-            "name": "vocalize",
-            "type": "checkbox",
-            "label": i18n.get("Pronounce word in source language")
+            "group": i18n.get("Bing Translator"),
+            "name": "bingAPIKey",
+            "type": "text",
+            "label": i18n.get("API Key"),
+            // "text": i18n.get("x-characters")
+        },
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("Bing Translator"),
+            "name": "myDescription",
+            "type": "description",
+            "text": i18n.get("bingDescription")
         }
+        */
     ]
 
 };
