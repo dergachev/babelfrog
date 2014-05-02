@@ -72,6 +72,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.msgId !== 'updatedSettingsBabelFrog') {
     return;
   }
+  console.log("Running setConfig send2");
   for (var i = 0; i < activeTabs.length; i++) {
     chrome.tabs.sendMessage(activeTabs[i], {
       msgId: "reconfigBabelFrog",

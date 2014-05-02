@@ -60,25 +60,10 @@ gotGreek.setConfig = function(config){
   };
 
   gotGreek.config = jQuery.extend({}, defaultConfig, config);
+  console.log("running gotGreek.setConfig");
   console.log(gotGreek.config);
+
   return;
-
-  if (typeof gotGreek.config.googleTranslateJsonp === "undefined") {
-    // default to true to support bookmarklet case
-    gotGreek.config.googleTranslateJsonp = true;
-  }
-
-  if (typeof gotGreek.config.engine === "undefined") {
-    gotGreek.config.engine = gotGreek.engines.googleTranslate;
-  }
-
-  if (typeof gotGreek.config.successCallback === "undefined") {
-    gotGreek.config.successCallback = gotGreek.callbacks.standardSuccessCallback;
-  }
-
-  if (typeof gotGreek.config.errorCallback === "undefined") {
-    gotGreek.config.errorCallback = gotGreek.callbacks.standardErrorCallback;
-  }
 }
 
 // TODO: update bookmarklet index.html to call boot in the new style, pass in API key
@@ -273,15 +258,16 @@ gotGreek.engines.googleTranslateFree = function(sourceText){
   jQuery.ajax({
     url:'http://translate.google.com/translate_a/t',
     type: 'GET',
+    dataType: 'json',
     success: function(response){
-      // This URL returns invalid JSON, so we need to sanitize it first
-      // [[["dreams","rêves","",""]],[["verb",["dream"],[["dream",["rêver","faire un rêve"],,0.32465246]],"rêver",2]],"fr",,[["dreams",[1],true,false,986,0,1,0]],[["rêves",1,[["dreams",986,true,false],["dream",0,true,false]],[[0,5]],"rêves"]],,[,"rêve",[10],,true],[],17]
-      response = response.replace(/,(?=,)/g, ',null');
-      response = response.replace(/,\]/g, ',null]');
-      response = response.replace(/\[,/g, '[null,');
-      response = JSON.parse(response);
-      if (response && response[0] && response[0][0] && response[0][0][0]){
-        gotGreek.config.successCallback(response[0][0][0]);
+
+      if (response && response.sentences && response.sentences.length > 0) {
+        var ret = [];
+        for (var i = 0; i < response.sentences.length; i++) {
+          ret.push(response.sentences[i].trans);
+        }
+        ret = ret.join(" ");
+        gotGreek.config.successCallback(ret);
         return;
       }
 
@@ -297,7 +283,7 @@ gotGreek.engines.googleTranslateFree = function(sourceText){
       gotGreek.config.errorCallback("Google Translate XHR error: <br/>"  + status);
     },
     data: {
-      client:'t',
+      client:'p',
       hl:'en',
       sc:'2',
       ie:'UTF-8',

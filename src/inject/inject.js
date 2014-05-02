@@ -25,6 +25,7 @@ function makeConfig(config){
   var extensionSuccessCallback = function(translation) {
     gotGreek.callbacks.standardSuccessCallback(translation);
     if (gotGreek.config.vocalize) {
+      console.log('sending message vocalize');
       // vocalize must be run from background.js
       chrome.runtime.sendMessage({msgId: "vocalize", text: gotGreek.currentJob.text});
     }
@@ -49,5 +50,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.msgId != 'reconfigBabelFrog') {
     return;
   }
+  console.log("received message reconfigBabelFrog");
   gotGreek.setConfig(makeConfig(request.config));
 });
