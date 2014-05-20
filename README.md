@@ -20,6 +20,13 @@ change this by clicking on the BabelFrog icon twice, to get this popup:
 Installation
 ------------
 
+Find [BabelFrog](https://chrome.google.com/webstore/detail/babelfrog/jnhmkblbgggfgeebimebebnkhgnagnpj) on the Chrome Web Store, and install it!
+
+Don't forget to customize the translation language pairs, which default French to English.
+
+Installation from Source
+------------------------
+
 Install from the chrome store. Or if you'd like to hack at the code yourself:
 
 ```
