@@ -1,13 +1,13 @@
-gotGreek = function(){};
+BabelFrog = function(){};
 
 //============================================================================
 // State
 //============================================================================
 
 // Default options
-gotGreek.config = {};
+BabelFrog.config = {};
 
-gotGreek.currentJob = {
+BabelFrog.currentJob = {
   text: '',
   translation: '',
   range: null,
@@ -15,13 +15,13 @@ gotGreek.currentJob = {
   y:0
 };
 
-gotGreek.cache = {};
+BabelFrog.cache = {};
 
 //============================================================================
 // Initialization
 //============================================================================
 
-gotGreek.init = function(){
+BabelFrog.init = function(){
   rangy.init();
 
   // support alt-clicking on links to translate them
@@ -36,7 +36,7 @@ gotGreek.init = function(){
 
   // clear result box on any click (mousedown)
   jQuery('body').mousedown(function(){
-    gotGreek.hideTooltip();
+    BabelFrog.hideTooltip();
   });
 
   // display translation of selection (mouseup)
@@ -44,32 +44,32 @@ gotGreek.init = function(){
     // Due to race condition triggered by re-clicking on existing selection,
     // we need to add a tiny timeout; see https://code.google.com/p/rangy/issues/detail?id=175
     window.setTimeout(function(){
-      gotGreek.translateListener(event);
+      BabelFrog.translateListener(event);
     }, 10);
   });
 
   jQuery('body').trigger({ type: 'mouseup', button: 0 });
 };
 
-gotGreek.setConfig = function(config){
+BabelFrog.setConfig = function(config){
   var defaultConfig = {
     googleTranslateJsonp: true,
-    engine: gotGreek.engines.googleTranslateFree,
-    successCallback: gotGreek.callbacks.standardSuccesCallback,
-    errorCallback: gotGreek.callbacks.standardErrorCallback,
+    engine: BabelFrog.engines.googleTranslateFree,
+    successCallback: BabelFrog.callbacks.standardSuccesCallback,
+    errorCallback: BabelFrog.callbacks.standardErrorCallback,
   };
 
-  gotGreek.config = jQuery.extend({}, defaultConfig, config);
-  console.log("running gotGreek.setConfig");
-  console.log(gotGreek.config);
+  BabelFrog.config = jQuery.extend({}, defaultConfig, config);
+  console.log("running BabelFrog.setConfig");
+  console.log(BabelFrog.config);
 
   return;
 }
 
 // TODO: update bookmarklet index.html to call boot in the new style, pass in API key
-gotGreek.boot = function(){
-  gotGreek.init();
-  gotGreek.showMessage('Loading complete, select a phrase to translate it. Alt-click a link to translate its text.');
+BabelFrog.boot = function(){
+  BabelFrog.init();
+  BabelFrog.showMessage('Loading complete, select a phrase to translate it. Alt-click a link to translate its text.');
 },
 
 
@@ -77,26 +77,26 @@ gotGreek.boot = function(){
 // Callbacks
 //============================================================================
 
-gotGreek.callbacks = {};
-gotGreek.callbacks.standardSuccessCallback = function(translation) {
+BabelFrog.callbacks = {};
+BabelFrog.callbacks.standardSuccessCallback = function(translation) {
   //TODO: simplify this
-  var currentJob = gotGreek.currentJob;
+  var currentJob = BabelFrog.currentJob;
   currentJob.translation = translation;
-  gotGreek.cache[currentJob.text] = currentJob.translation;
-  gotGreek.showTooltip(currentJob.text, currentJob.translation, currentJob.x, currentJob.y);
+  BabelFrog.cache[currentJob.text] = currentJob.translation;
+  BabelFrog.showTooltip(currentJob.text, currentJob.translation, currentJob.x, currentJob.y);
 };
 
-gotGreek.callbacks.standardErrorCallback = function(errorMessage){
-  gotGreek.showMessage(errorMessage);
+BabelFrog.callbacks.standardErrorCallback = function(errorMessage){
+  BabelFrog.showMessage(errorMessage);
 }
 
 //============================================================================
 // Tooltip/message helpers
 //============================================================================
 
-gotGreek.showTooltip = function(text, translation, x, y){
-  gotGreek.hideTooltip();
-  jQuery('<div id="gotGreek-box" class="gotGreek-box">')
+BabelFrog.showTooltip = function(text, translation, x, y){
+  BabelFrog.hideTooltip();
+  jQuery('<div id="BabelFrog-box" class="BabelFrog-box">')
     .html('<p class="translation">' + translation + '</p><hr><p class="text" style="color: LightGray">' + text + '</p>')
     .css('top',(jQuery(document).scrollTop() + y + 10)+'px')
     .css('left',(jQuery(document).scrollLeft() + x + 10)+'px')
@@ -114,13 +114,13 @@ gotGreek.showTooltip = function(text, translation, x, y){
     .appendTo('body');
 };
 
-gotGreek.hideTooltip = function() {
-  jQuery('#gotGreek-box').remove();
+BabelFrog.hideTooltip = function() {
+  jQuery('#BabelFrog-box').remove();
 }
 
-gotGreek.showMessage = function(message) {
-  gotGreek.showTooltip(message, 'Got Greek', 0, 0);
-  jQuery('.gotGreek-box').fadeOut(3000 || 0, function(){
+BabelFrog.showMessage = function(message) {
+  BabelFrog.showTooltip(message, 'BabelFrog', 0, 0);
+  jQuery('.BabelFrog-box').fadeOut(3000 || 0, function(){
     jQuery(this).remove();
   });
 }
@@ -130,7 +130,7 @@ gotGreek.showMessage = function(message) {
 //============================================================================
 
 // helper function for translateListener, pushes a range to its boundaries
-gotGreek.expandToWordBoundary = function(range){
+BabelFrog.expandToWordBoundary = function(range){
   var nonBoundaryPattern = /[^\s:!.,\"\(\)«»%$]/,
       startNodeValue = range.startContainer.nodeValue,
       endNodeValue = range.endContainer.nodeValue,
@@ -153,9 +153,9 @@ gotGreek.expandToWordBoundary = function(range){
 // Listener
 //============================================================================
 
-gotGreek.translateListener = function(event){
+BabelFrog.translateListener = function(event){
 
-  var currentJob = gotGreek.currentJob;
+  var currentJob = BabelFrog.currentJob;
 
   // only pay attention to left-clicks
   if (event.button!==0) {
@@ -180,7 +180,7 @@ gotGreek.translateListener = function(event){
   // if there is a selection, push it to its bounding limits
   else {
     var r = rangy.getSelection().getRangeAt(0);
-    gotGreek.expandToWordBoundary(r);
+    BabelFrog.expandToWordBoundary(r);
     currentJob.range = r;
   }
 
@@ -200,61 +200,61 @@ gotGreek.translateListener = function(event){
 
     rangy.getSelection().setSingleRange(currentJob.range);
 
-    if (gotGreek.cache[currentJob.text]){
-      currentJob.translation = gotGreek.cache[currentJob.text];
-      gotGreek.showTooltip(currentJob.text, currentJob.translation, currentJob.x, currentJob.y);
+    if (BabelFrog.cache[currentJob.text]){
+      currentJob.translation = BabelFrog.cache[currentJob.text];
+      BabelFrog.showTooltip(currentJob.text, currentJob.translation, currentJob.x, currentJob.y);
       return;
     }
 
     //send request to Google
-    gotGreek.invokeTranslationEngine(currentJob);
+    BabelFrog.invokeTranslationEngine(currentJob);
   }
 }
 
-gotGreek.invokeTranslationEngine = function(currentJob){
-  gotGreek.config.engine(currentJob.text);
+BabelFrog.invokeTranslationEngine = function(currentJob){
+  BabelFrog.config.engine(currentJob.text);
 }
 
 //============================================================================
 // Translation engines
 //============================================================================
 
-gotGreek.engines = {};
+BabelFrog.engines = {};
 
 // works well for bookmarklet, needs (paid) API key
-gotGreek.engines.googleTranslate = function(sourceText){
+BabelFrog.engines.googleTranslate = function(sourceText){
   jQuery.ajax({
     url:'https://www.googleapis.com/language/translate/v2',
     type: 'GET',
-    dataType: gotGreek.config.googleTranslateJsonp ? 'jsonp' : null,
+    dataType: BabelFrog.config.googleTranslateJsonp ? 'jsonp' : null,
     success: function(response){
       if (response.data && response.data.translations) {
-        gotGreek.config.successCallback(response.data.translations[0].translatedText);
+        BabelFrog.config.successCallback(response.data.translations[0].translatedText);
         return;
       }
 
       // Google Translate reports 200 in case of error messages
       if (response.error){
-        gotGreek.config.errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
+        BabelFrog.config.errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
       }
       else {
-        gotGreek.config.errorCallback('Google Translate error: unable to parse response.');
+        BabelFrog.config.errorCallback('Google Translate error: unable to parse response.');
       }
     },
     error: function(xhr, status){
-      gotGreek.config.errorCallback("Google Translate XHR error: <br/>"  + status);
+      BabelFrog.config.errorCallback("Google Translate XHR error: <br/>"  + status);
     },
     data: {
-      key: gotGreek.config.googleApiKey,
-      source: gotGreek.config.source,
-      target: gotGreek.config.target,
+      key: BabelFrog.config.googleApiKey,
+      source: BabelFrog.config.source,
+      target: BabelFrog.config.target,
       q: sourceText
     }
   });
 }
 
 // Potentially illegitimate use of non-public API; but many other extensions use it too.
-gotGreek.engines.googleTranslateFree = function(sourceText){
+BabelFrog.engines.googleTranslateFree = function(sourceText){
   jQuery.ajax({
     url:'http://translate.google.com/translate_a/t',
     type: 'GET',
@@ -267,20 +267,20 @@ gotGreek.engines.googleTranslateFree = function(sourceText){
           ret.push(response.sentences[i].trans);
         }
         ret = ret.join(" ");
-        gotGreek.config.successCallback(ret);
+        BabelFrog.config.successCallback(ret);
         return;
       }
 
       // Google Translate reports 200 in case of error messages
       if (response.error){
-        gotGreek.config.errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
+        BabelFrog.config.errorCallback('Google Translate Error ' + response.error.code + ': <br/>' + response.error.message);
       }
       else {
-        gotGreek.config.errorCallback('Google Translate: unable to parse response.');
+        BabelFrog.config.errorCallback('Google Translate: unable to parse response.');
       }
     },
     error: function(xhr, status){
-      gotGreek.config.errorCallback("Google Translate XHR error: <br/>"  + status);
+      BabelFrog.config.errorCallback("Google Translate XHR error: <br/>"  + status);
     },
     data: {
       client:'p',
@@ -290,8 +290,8 @@ gotGreek.engines.googleTranslateFree = function(sourceText){
       oe:'UTF-8',
       ssel:'0',
       tsel:'0',
-      sl: gotGreek.config.source,
-      tl: gotGreek.config.target,
+      sl: BabelFrog.config.source,
+      tl: BabelFrog.config.target,
       q: sourceText
     }
   });

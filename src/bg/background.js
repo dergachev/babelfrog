@@ -8,7 +8,7 @@ var settings = new Store("settings", {
     "vocalize": true
 });
 
-function gotGreekSettings(settings){
+function BabelFrogSettings(settings){
   var ret = {
     srcLang: settings.get('srcLang'),
     targetLang: settings.get('targetLang'),
@@ -31,7 +31,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   chrome.tabs.executeScript(tab.id, {file: "src/inject/inject.js"}, function(){
     chrome.tabs.sendMessage(tab.id, {
       msgId: "bootBabelFrog",
-      config: gotGreekSettings(settings)
+      config: BabelFrogSettings(settings)
     });
   });
 
@@ -66,7 +66,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 /**
- * Listens for updates to BabelFrog settings and updates gotGreek.config
+ * Listens for updates to BabelFrog settings and updates BabelFrog.config
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.msgId !== 'updatedSettingsBabelFrog') {
@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   for (var i = 0; i < activeTabs.length; i++) {
     chrome.tabs.sendMessage(activeTabs[i], {
       msgId: "reconfigBabelFrog",
-      config: gotGreekSettings(settings)
+      config: BabelFrogSettings(settings)
     });
   }
 });

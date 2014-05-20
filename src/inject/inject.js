@@ -10,30 +10,30 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
    *
    **/
   jQuery(function($){
-    gotGreek.setConfig(makeConfig(request.config));
-    gotGreek.boot(); 
+    BabelFrog.setConfig(makeConfig(request.config));
+    BabelFrog.boot(); 
   });
 
 });
 
 /*
- * Maps chrome extension config to gotGreek config
+ * Maps chrome extension config to BabelFrog config
  */
 function makeConfig(config){
 
   // Override standardSuccesCallback to also play audio.
   var extensionSuccessCallback = function(translation) {
-    gotGreek.callbacks.standardSuccessCallback(translation);
-    if (gotGreek.config.vocalize) {
+    BabelFrog.callbacks.standardSuccessCallback(translation);
+    if (BabelFrog.config.vocalize) {
       console.log('sending message vocalize');
       // vocalize must be run from background.js
-      chrome.runtime.sendMessage({msgId: "vocalize", text: gotGreek.currentJob.text});
+      chrome.runtime.sendMessage({msgId: "vocalize", text: BabelFrog.currentJob.text});
     }
   }
   var ret = {
     source: config.srcLang,
     target: config.targetLang,
-    engine: gotGreek.engines.googleTranslateFree, // TODO: make this an option in the UI
+    engine: BabelFrog.engines.googleTranslateFree, // TODO: make this an option in the UI
     successCallback: extensionSuccessCallback,
     googleApiKey: config.googleApiKey,
     googleTranslateJsonp: false,
@@ -43,7 +43,7 @@ function makeConfig(config){
 }
 
 /**
- * Listener for changes to gotGreek config
+ * Listener for changes to BabelFrog config
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   // flag to designate type of message
@@ -51,5 +51,5 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return;
   }
   console.log("received message reconfigBabelFrog");
-  gotGreek.setConfig(makeConfig(request.config));
+  BabelFrog.setConfig(makeConfig(request.config));
 });
