@@ -24,7 +24,7 @@ function BabelFrogSettings(settings){
  *
  */
 chrome.browserAction.onClicked.addListener(function(tab) {
-  var files = ["src/inject/jquery.min.js", "src/inject/rangy-core.js","src/inject/gotgreek.js"];
+  var files = ["src/inject/jquery.min.js", "src/inject/rangy-core.js","src/inject/babelfrog.js"];
   for (var i = 0; i < files.length; i++) {
     chrome.tabs.executeScript(tab.id, {file: files[i]});
   }
