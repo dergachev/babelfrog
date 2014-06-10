@@ -23,11 +23,11 @@ git clone https://github.com/dergachev/babelfrog.git
 
 Now open Chrome's extension management:
 
-![](https://dl.dropbox.com/u/29440342/screenshots/ULACXNBJ-2014.05.02-15-14-17.png)
+![](https://raw.githubusercontent.com/dergachev/babelfrog/master/screenshots/chrome-screenshot-tools-extensions.png)
 
 And add the "Unpacked extension":
 
-![](https://dl.dropbox.com/u/29440342/screenshots/RGWYYKWM-2014.05.02-15-09-58.png)
+![](https://raw.githubusercontent.com/dergachev/babelfrog/master/screenshots/chrome-load-unpacked-screenshot.png)
 
 Keep in mind that if you edit certain files (like manifest.json,
 background.html), the changes will not be picked up by Chrome until you reload
