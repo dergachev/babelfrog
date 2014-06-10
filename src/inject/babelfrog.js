@@ -15,8 +15,6 @@ BabelFrog.currentJob = {
   y:0
 };
 
-BabelFrog.cache = {};
-
 //============================================================================
 // Initialization
 //============================================================================
@@ -82,7 +80,6 @@ BabelFrog.callbacks.standardSuccessCallback = function(translation) {
   //TODO: simplify this
   var currentJob = BabelFrog.currentJob;
   currentJob.translation = translation;
-  BabelFrog.cache[currentJob.text] = currentJob.translation;
   BabelFrog.showTooltip(currentJob.text, currentJob.translation, currentJob.x, currentJob.y);
 };
 
@@ -199,12 +196,6 @@ BabelFrog.translateListener = function(event){
     currentJob.y = event.clientY || selectionXY.bottom - 10;
 
     rangy.getSelection().setSingleRange(currentJob.range);
-
-    if (BabelFrog.cache[currentJob.text]){
-      currentJob.translation = BabelFrog.cache[currentJob.text];
-      BabelFrog.showTooltip(currentJob.text, currentJob.translation, currentJob.x, currentJob.y);
-      return;
-    }
 
     //send request to Google
     BabelFrog.invokeTranslationEngine(currentJob);
