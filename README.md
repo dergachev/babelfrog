@@ -4,30 +4,17 @@ BabelFrog
 A Google Chrome extension to help you learn a language as you browse the web. 
 Uses Google Translate to translate the selected text.
 
-![](https://dl.dropbox.com/u/29440342/screenshots/PJOJIYJX-2014.05.02-15-04-28.png)
+![](http://babelfrog.com/img/babelfrog-demo-4.gif)
 
-Usage
------
-
-Activate the extension on the current page (like a bookmarklet) by pressing `Alt-F` or clicking on the frog icon.
-Then any text you will select will be automatically translated via Google Translate.
-
-By default the extension translates from French into English (because that's why I wrote it!) but you can easily
-change this by clicking on the BabelFrog icon twice, to get this popup:
-
-![](https://dl.dropbox.com/u/29440342/screenshots/GGGUDMEE-2014.05.02-15-07-06.png)
+For usage instructions, see [http://babelfrog.com/help](http://babelfrog.com/help).
 
 Installation
 ------------
 
-Find [BabelFrog](https://chrome.google.com/webstore/detail/babelfrog/jnhmkblbgggfgeebimebebnkhgnagnpj) on the Chrome Web Store, and install it!
+The easiest way to run BabelFrog is to install it via the [Chrome Web
+Store](https://chrome.google.com/webstore/detail/babelfrog/jnhmkblbgggfgeebimebebnkhgnagnpj).
 
-Don't forget to customize the translation language pairs, which default French to English.
-
-Installation from Source
-------------------------
-
-Install from the chrome store. Or if you'd like to hack at the code yourself:
+To install from source, clone this repository and then load it to chrome as an "Unpacked extension":
 
 ```
 cd ~/code  #  or wherever you put your cloned github repos
@@ -42,4 +29,10 @@ And add the "Unpacked extension":
 
 ![](https://dl.dropbox.com/u/29440342/screenshots/RGWYYKWM-2014.05.02-15-09-58.png)
 
+Keep in mind that if you edit certain files (like manifest.json,
+background.html), the changes will not be picked up by Chrome until you reload
+the Extensions management page (chrome://extensions/), which auto-reloads all
+unpacked extensions.
 
+See [DEVNOTES.md](https://github.com/dergachev/babelfrog/blob/master/DEVNOTES.md) for
+other developer instructions.
