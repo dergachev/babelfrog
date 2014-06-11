@@ -93,21 +93,30 @@ BabelFrog.callbacks.standardErrorCallback = function(errorMessage){
 
 BabelFrog.showTooltip = function(text, translation, x, y){
   BabelFrog.hideTooltip();
-  jQuery('<div id="BabelFrog-box" class="BabelFrog-box">')
-    .html('<p class="translation">' + translation + '</p><hr><p class="text" style="color: LightGray">' + text + '</p>')
-    .css('top',(jQuery(document).scrollTop() + y + 10)+'px')
-    .css('left',(jQuery(document).scrollLeft() + x + 10)+'px')
-    .css( { 'font-family' : 'Arial',
+  var css = {
+            'font-family' : 'Arial',
             'z-index': '2147483647',
             'background-color': '#000000',
+            'border-radius': '5px',
             'color': ' #e3ce63', /* yellow */
             'position': 'absolute',
             'font-size': '14px',
             'padding': ' 10px',
             'min-width': '10em',
             'max-width': '30em',
+            'line-height': '1em',
             'white-space': ' pre-line',
-    })
+    };
+
+  var a = jQuery('<p class="translation">' + translation + '</p>').css(css);
+  console.log("BabelFrog is submitting the following text for translation:");
+  console.log(text);
+
+  jQuery('<div id="BabelFrog-box" class="BabelFrog-box">')
+    .html(a.html())
+    .css('top',(jQuery(document).scrollTop() + y + 3)+'px')
+    .css('left',(jQuery(document).scrollLeft() + x - 5 )+'px')
+    .css(css )
     .appendTo('body');
 };
 
