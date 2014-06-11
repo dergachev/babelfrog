@@ -126,6 +126,12 @@ BabelFrog.showMessage = function(message) {
 // Rangy helpers
 //============================================================================
 
+//
+BabelFrog.filterSelection = function(text) {
+  // collapse multiple blank lines
+  return text.replace(/\n\s*\n/g, '\n\n');
+}
+
 // helper function for translateListener, pushes a range to its boundaries
 BabelFrog.expandToWordBoundary = function(range){
   var nonBoundaryPattern = /[^\s:!.,\"\(\)«»%$]/,
@@ -144,6 +150,30 @@ BabelFrog.expandToWordBoundary = function(range){
   range.setEnd(range.endContainer,end);
   return range;
 };
+
+BabelFrog.drawRectangles = function(rects) {
+  var drawRectangle = function(rect, color) {
+    jQuery('<div />')
+      .css( {
+        "position": "absolute",
+        "top":(jQuery(document).scrollTop() + rect.top) + 'px',
+        "left":(jQuery(document).scrollLeft() + rect.left) + 'px',
+        "width":(rect.width) + 'px',
+        "height":(rect.height) + 'px',
+        "border": "1px solid " + color,
+        "-webkit-user-select": "none"
+      })
+      .appendTo('body');
+  }
+
+  drawRect(window.getSelection().getRangeAt(0).getBoundingClientRect(), 'blue');
+
+  for (var i = 0; i < rects.length; i++) {
+    var rect = rects[i];
+    drawRect(rect, 'red');
+    console.log(rect.top);
+  }
+}
 
 
 //============================================================================
@@ -178,6 +208,7 @@ BabelFrog.translateListener = function(event){
   else {
     var r = rangy.getSelection().getRangeAt(0);
     BabelFrog.expandToWordBoundary(r);
+    rangy.getSelection().setSingleRange(r);
     currentJob.range = r;
   }
 
@@ -186,16 +217,23 @@ BabelFrog.translateListener = function(event){
     return;
   }
 
-  //TODO instead of toString, go through the range and jump over script tags
-  // if what you found is not garbage translate it
-  var selection = currentJob.range.toString();
-  if (typeof selection !== 'undefined' && /\S/.test(selection) && /\D/.test(selection)){
-    currentJob.text = selection;
-    var selectionXY = rangy.getSelection().getRangeAt(0).nativeRange.getClientRects()[0];
-    currentJob.x = event.clientX || selectionXY.left;
-    currentJob.y = event.clientY || selectionXY.bottom - 10;
+  // Instead of currentJob.range.toString(), we use the native method as its closer
+  // to what the user expects than the rangy version.
+  var selection = currentJob.range.nativeRange.toString();
 
-    rangy.getSelection().setSingleRange(currentJob.range);
+  if (typeof selection !== 'undefined' && /\S/.test(selection) && /\D/.test(selection)){
+    currentJob.text = BabelFrog.filterSelection(selection);
+    var rects = rangy.getSelection().getRangeAt(0).nativeRange.getClientRects();
+
+    // In Chrome, these are ordered by top ascending, so we take the last one.
+    // This corresponds to the "most specific" "bottom-most" rectangle, which should
+    // contain the end of the selection and not much else.
+    // To debug, try calling:
+    //   BabelFrog.drawRectangles(rects);
+    var selectionXY = rects[rects.length - 1];
+
+    currentJob.x = selectionXY.left;
+    currentJob.y = selectionXY.bottom;
 
     //send request to Google
     BabelFrog.invokeTranslationEngine(currentJob);
