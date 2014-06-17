@@ -112,20 +112,34 @@ BabelFrog.showTooltip = function(text, translation, x, y){
   console.log("BabelFrog is submitting the following text for translation:");
   console.log(text);
 
-  jQuery('<div id="BabelFrog-box" class="BabelFrog-box">')
+  var el = jQuery('<div id="BabelFrog-box" class="BabelFrog-box">')
     .html(a.html())
-    .css('top',(jQuery(document).scrollTop() + y + 3)+'px')
-    .css('left',(jQuery(document).scrollLeft() + x - 5 )+'px')
-    .css(css )
-    .appendTo('body');
+    .css(css );
+
+  BabelFrog.drawOverlay(el, x -5, y + 3);
 };
+
+BabelFrog.drawOverlay = function(el, x, y){
+
+  x = x + jQuery(document).scrollLeft();
+  y = y + jQuery(document).scrollTop();
+
+  // if body positioned relative or absolute; then need to account for its offsets
+  if (jQuery.css(document.body, "position") != "static") {
+    x = x - jQuery('body').offset().left;
+    y = y - jQuery('body').offset().top;
+  }
+
+  el.css( { 'left': x + 'px', 'top':  y + 'px' })
+    .appendTo('body')
+}
 
 BabelFrog.hideTooltip = function() {
   jQuery('#BabelFrog-box').remove();
 }
 
 BabelFrog.showMessage = function(message) {
-  BabelFrog.showTooltip(message, 'BabelFrog', 0, 0);
+  BabelFrog.showTooltip(message, 'BabelFrog Loaded', 10, 10);
   jQuery('.BabelFrog-box').fadeOut(3000 || 0, function(){
     jQuery(this).remove();
   });
@@ -161,22 +175,23 @@ BabelFrog.expandToWordBoundary = function(range){
 };
 
 BabelFrog.drawRectangles = function(rects) {
-  var drawRectangle = function(rect, color) {
-    jQuery('<div />')
-      .css( {
-        "position": "absolute",
-        "top":(jQuery(document).scrollTop() + rect.top) + 'px',
-        "left":(jQuery(document).scrollLeft() + rect.left) + 'px',
-        "width":(rect.width) + 'px',
-        "height":(rect.height) + 'px',
-        "border": "1px solid " + color,
-        "-webkit-user-select": "none"
-      })
-      .appendTo('body');
+  var drawRect = function(rect, color) {
+    var el = jQuery('<div />')
+              .css( {
+                "position": "absolute",
+                "width":(rect.width) + 'px',
+                "height":(rect.height) + 'px',
+                "border": "1px solid " + color,
+                "background": "none",
+                "z-index": "9999",
+                "-webkit-user-select": "none"
+              })
+    BabelFrog.drawOverlay(el, rect.left , rect.top);
   }
 
   drawRect(window.getSelection().getRangeAt(0).getBoundingClientRect(), 'blue');
 
+  console.log(rects);
   for (var i = 0; i < rects.length; i++) {
     var rect = rects[i];
     drawRect(rect, 'red');
@@ -232,17 +247,33 @@ BabelFrog.translateListener = function(event){
 
   if (typeof selection !== 'undefined' && /\S/.test(selection) && /\D/.test(selection)){
     currentJob.text = BabelFrog.filterSelection(selection);
-    var rects = rangy.getSelection().getRangeAt(0).nativeRange.getClientRects();
+    var rects = currentJob.range.nativeRange.getClientRects();
 
     // In Chrome, these are ordered by top ascending, so we take the last one.
     // This corresponds to the "most specific" "bottom-most" rectangle, which should
     // contain the end of the selection and not much else.
     // To debug, try calling:
     //   BabelFrog.drawRectangles(rects);
-    var selectionXY = rects[rects.length - 1];
 
-    currentJob.x = selectionXY.left;
-    currentJob.y = selectionXY.bottom;
+    // Ocasionally, the range will end at the beginning of a node that doesn't actually
+    // contain any of the selected text (just in case?). In this case, we need to position the tooltip
+    // relative to the penultimate node. We check for this via range.endOffset property,
+    // which specifies how many characters of the end node are included in the selection.
+    // See https://dl.dropbox.com/u/29440342/screenshots/HKANHFEW-2014.06.16-11-14-06.png
+    var lastIndex =  (currentJob.range.endOffset == 0) ? rects.length - 2 : rects.length - 1;
+
+    // Align the tooltip under the last rectangle.
+    currentJob.y = rects[lastIndex].bottom;
+    currentJob.x = rects[lastIndex].left;
+
+    // Each inline span element gets its own rectangle too, so we must align
+    // tooltip with the left-most rectangle.
+    // See https://dl.dropbox.com/u/29440342/screenshots/MPABGIGR-2014.06.16-12-09-53.png
+    for (var i = 0; i < lastIndex; i++) {
+      if (currentJob.x > rects[i].left) {
+        currentJob.x = rects[i].left;
+      }
+    }
 
     //send request to Google
     BabelFrog.invokeTranslationEngine(currentJob);
