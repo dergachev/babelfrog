@@ -5,7 +5,7 @@
 ```bash
 # make changes
 
-vim CHANGELOG.md       # update notes
+make changelog         # update CHANGELOG.md
 vim manifest.json      # increment version to N.N.N
 git commit -am "Published version vN.N.N"
 git tag vN.N.N
