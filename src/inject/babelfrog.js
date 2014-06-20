@@ -336,6 +336,21 @@ BabelFrog.engines.googleTranslateFree = function(sourceText){
           ret.push(response.sentences[i].trans);
         }
         ret = ret.join(" ");
+
+        // google translate sends us definitions only if a single word is searched for
+        if (response.dict) {
+          var dictRet = [];
+          for (var i = 0; i < response.dict.length; i++) {
+            var def = response.dict[i];
+            var base = def.base_form,
+                type = def.pos,
+                terms = def.terms.join(", ");
+
+            dictRet.push("<em>(" + type + ")</em> " + def.terms.join(", "));
+          }
+
+          ret = ret + "<br/><br/>" + dictRet.join("<br/>");
+        }
         BabelFrog.config.successCallback(ret);
         return;
       }
