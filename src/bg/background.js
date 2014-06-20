@@ -28,6 +28,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   for (var i = 0; i < files.length; i++) {
     chrome.tabs.executeScript(tab.id, {file: files[i]});
   }
+  chrome.tabs.insertCSS(tab.id, {file: "src/css/babelfrog.css"});
   chrome.tabs.executeScript(tab.id, {file: "src/inject/inject.js"}, function(){
     chrome.tabs.sendMessage(tab.id, {
       msgId: "bootBabelFrog",

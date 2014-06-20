@@ -93,28 +93,12 @@ BabelFrog.callbacks.standardErrorCallback = function(errorMessage){
 
 BabelFrog.showTooltip = function(text, translation, x, y){
   BabelFrog.hideTooltip();
-  var css = {
-            'font-family' : 'Arial',
-            'z-index': '2147483647',
-            'background-color': '#000000',
-            'border-radius': '5px',
-            'color': ' #e3ce63', /* yellow */
-            'position': 'absolute',
-            'font-size': '14px',
-            'padding': ' 10px',
-            'min-width': '10em',
-            'max-width': '30em',
-            'line-height': '1em',
-            'white-space': ' pre-line',
-    };
-
-  var a = jQuery('<p class="translation">' + translation + '</p>').css(css);
+  var a = jQuery('<p class="translation">' + translation + '</p>');
   console.log("BabelFrog is submitting the following text for translation:");
   console.log(text);
 
   var el = jQuery('<div id="BabelFrog-box" class="BabelFrog-box">')
-    .html(a.html())
-    .css(css );
+    .html(a.html());
 
   BabelFrog.drawOverlay(el, x -5, y + 3);
 };

@@ -1,0 +1,14 @@
+#BabelFrog-box, #BabelFrog-box p.translation {
+  font-family: 'Arial' !important;
+  z-index: 2147483647 !important;
+  background-color: #000000 !important;
+  border-radius: 5px !important;
+  color:  #e3ce63 !important; /* yellow */
+  position: absolute !important;
+  font-size: 14px !important;
+  padding:  10px !important;
+  min-width: 10em !important;
+  max-width: 30em !important;
+  line-height: 1em !important;
+  white-space:  pre-line !important;
+}
