@@ -1,6 +1,16 @@
 # BabelFrog Changelog
 
-## [0.0.3](https://github.com/dergachev/babelfrog/compare/v0.0.2...v0.0.3) (June ??, 2014)
+## [0.0.4](https://github.com/dergachev/babelfrog/compare/v0.0.3...v0.0.4) (June 23, 2014)
+
+IMPROVEMENTS:
+
+- 5f70d40 Extracted babelfrog.css into own file
+
+FEAUTURES:
+
+- c3c5a22 display alternative translations of single word selections; refs #1
+
+## [0.0.3](https://github.com/dergachev/babelfrog/compare/v0.0.2...v0.0.3) (June 19, 2014)
 
 IMPROVEMENTS
 
