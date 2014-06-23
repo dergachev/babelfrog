@@ -27,7 +27,7 @@
   },
   "permissions": [
     "activeTab",
-    "http://translate.google.com/"
+    "http://translate.google.com/*"
   ],
   "commands": {
     "_execute_browser_action": {
