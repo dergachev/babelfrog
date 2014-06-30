@@ -1,14 +1,28 @@
 #BabelFrog-box, #BabelFrog-box p.translation {
-  font-family: 'Arial' !important;
-  z-index: 2147483647 !important;
-  background-color: #000000 !important;
+  background-color: #e6ffb3 !important;  /* light blue */
+  color:  black !important;
   border-radius: 5px !important;
-  color:  #e3ce63 !important; /* yellow */
+  box-shadow: 2px 2px 3px #888 !important;
   position: absolute !important;
   font-size: 14px !important;
-  padding:  10px !important;
-  min-width: 10em !important;
-  max-width: 30em !important;
-  line-height: 1em !important;
+  font-family: "Trebuchet MS", Helvetica, sans-serif !important;
+  line-height: 1.3em !important;
+  text-align: left !important;
+  min-width: 1em !important;
+  max-width: 50em !important;
+  padding: 10px !important;
+  margin: 0px 10px 10px -5px !important;
   white-space:  pre-line !important;
+  z-index: 2147483647 !important;
+}
+
+/* higher contrast than browser default selection styling */
+body ::selection {
+  color: Black !important;
+  background: #cdeeff !important; /* light green */
+}
+
+/* when holding alt-key over link, charge cursor */
+body.BabelFrog-alt-held a {
+  cursor:help !important;
 }

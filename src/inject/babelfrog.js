@@ -22,6 +22,17 @@ BabelFrog.currentJob = {
 BabelFrog.init = function(){
   rangy.init();
 
+  jQuery("body").keydown(function(event) {
+    // trap only Alt key
+    if (event.keyCode == 18) {
+      jQuery('body').addClass('BabelFrog-alt-held');
+    }
+  });
+
+  jQuery("body").keyup(function(event) {
+      jQuery('body').removeClass('BabelFrog-alt-held');
+  });
+
   // support alt-clicking on links to translate them
   jQuery('a').click(function(event){
     if (event.altKey) {
