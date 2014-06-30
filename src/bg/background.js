@@ -1,4 +1,15 @@
-var activeTabs = [];
+var ChromeBabelFrog = {};
+
+ChromeBabelFrog.capitalize = function(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+ChromeBabelFrog.setBadge = function(tabId) {
+  chrome.browserAction.setBadgeText({
+    text: ChromeBabelFrog.capitalize(settings.get('srcLang')),
+    tabId: tabId
+  });
+}
 
 var settings = new Store("settings", {
     "srcLang": "fr",
@@ -8,7 +19,7 @@ var settings = new Store("settings", {
     "vocalize": true
 });
 
-function BabelFrogSettings(settings){
+ChromeBabelFrog.settings = function(settings){
   var ret = {
     srcLang: settings.get('srcLang'),
     targetLang: settings.get('targetLang'),
@@ -19,31 +30,39 @@ function BabelFrogSettings(settings){
 }
 
 /**
- * Injects the BabelFrog content scripts into currently active webpage.
+ * Injects the BabelFrog content scripts into currently active tab.
  * Subsequet clicks will display the BabelFrog settings popup.
  *
  */
-chrome.browserAction.onClicked.addListener(function(tab) {
-  var files = ["src/inject/jquery.min.js", "src/inject/rangy-core.js","src/inject/babelfrog.js"];
-  for (var i = 0; i < files.length; i++) {
-    chrome.tabs.executeScript(tab.id, {file: files[i]});
-  }
-  chrome.tabs.insertCSS(tab.id, {file: "src/css/babelfrog.css"});
-  chrome.tabs.executeScript(tab.id, {file: "src/inject/inject.js"}, function(){
-    chrome.tabs.sendMessage(tab.id, {
-      msgId: "bootBabelFrog",
-      config: BabelFrogSettings(settings)
-    });
-  });
+ChromeBabelFrog.activate = function(tab) {
+  chrome.tabs.sendMessage(tab.id, { msgId: "isBabelFrogLoaded" }, function(result) {
+    // not already loaded
+    if (typeof(result) == "undefined") {
 
-  // The initial click on the browserAction (BabelFrog icon) will activate it on the current tab.
-  // Subsequet clicks will display the settings popup, which includes a CSS file to clean it up.
-  chrome.browserAction.setPopup({
-      tabId: tab.id,
-      popup: 'src/options_custom/popup.html'
+      ChromeBabelFrog.setBadge(tab.id);
+
+      var files = ["src/inject/jquery.min.js", "src/inject/rangy-core.js","src/inject/babelfrog.js"];
+      for (var i = 0; i < files.length; i++) {
+        chrome.tabs.executeScript(tab.id, {file: files[i]});
+      }
+      chrome.tabs.insertCSS(tab.id, {file: "src/css/babelfrog.css"});
+      chrome.tabs.executeScript(tab.id, {file: "src/inject/inject.js"}, function(){
+        chrome.tabs.sendMessage(tab.id, {
+          msgId: "bootBabelFrog",
+          config: ChromeBabelFrog.settings(settings)
+        });
+      });
+      // The initial click on the browserAction (BabelFrog icon) will activate it on the current tab.
+      // Subsequet clicks will display the settings popup, which includes a CSS file to clean it up.
+      chrome.browserAction.setPopup({
+          tabId: tab.id,
+          popup: 'src/options_custom/popup.html'
+      });
+    }
   });
-  activeTabs.push(tab.id);
-});
+};
+
+chrome.browserAction.onClicked.addListener(ChromeBabelFrog.activate);
 
 /**
  * Listens for vocalization requests from content scripts.
@@ -73,11 +92,34 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.msgId !== 'updatedSettingsBabelFrog') {
     return;
   }
-  console.log("Running setConfig send2");
-  for (var i = 0; i < activeTabs.length; i++) {
-    chrome.tabs.sendMessage(activeTabs[i], {
-      msgId: "reconfigBabelFrog",
-      config: BabelFrogSettings(settings)
-    });
-  }
+
+  chrome.tabs.query({}, function(tabs) {
+    for (var i = 0; i < tabs.length; i++) {
+      var closure = function(id) {
+        return function(response) {
+          // update each BabelFrog tab's badge text to reflect new setting
+          if (typeof(response) !== "undefined") {
+            ChromeBabelFrog.setBadge(id);
+          }
+        }
+      }
+      chrome.tabs.sendMessage(tabs[i].id, {
+        msgId: "reconfigBabelFrog",
+        config: ChromeBabelFrog.settings(settings)
+      }, closure(tabs[i].id));
+    }
+  });
 });
+
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.contextMenus.create({
+    title: "BabelFrog",
+    "contexts": ["all"],
+    "id": "BabelFrog",
+  });
+});
+
+chrome.contextMenus.onClicked.addListener(function(info, tab) {
+  ChromeBabelFrog.activate(tab);
+});
+

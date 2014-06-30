@@ -27,6 +27,7 @@
   },
   "permissions": [
     "activeTab",
+    "contextMenus",
     "http://translate.google.com/*"
   ],
   "commands": {

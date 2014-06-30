@@ -4,14 +4,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return;
   }
 
-
   /**
    * Run BabelFish.
-   *
    **/
   jQuery(function($){
     BabelFrog.setConfig(makeConfig(request.config));
-    BabelFrog.boot(); 
+    BabelFrog.boot();
   });
 
 });
@@ -52,4 +50,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   }
   console.log("received message reconfigBabelFrog");
   BabelFrog.setConfig(makeConfig(request.config));
+  sendResponse({});
+});
+
+/**
+ * Listener to confirm that given tab has BabelFrog loaded.
+ */
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.msgId == 'isBabelFrogLoaded') {
+    sendResponse(true);
+  }
 });
