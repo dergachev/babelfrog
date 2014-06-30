@@ -1,5 +1,13 @@
 var ChromeBabelFrog = {};
 
+ChromeBabelFrog.play = function(url) {
+  if (typeof(ChromeBabelFrog.currentlyPlaying) !== "undefined") {
+    ChromeBabelFrog.currentlyPlaying.pause();
+  }
+  ChromeBabelFrog.currentlyPlaying = new Audio(url);
+  ChromeBabelFrog.currentlyPlaying.play();
+}
+
 ChromeBabelFrog.capitalize = function(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
@@ -74,15 +82,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return;
   }
 
-  // try to play the text
+  // Try to play the text (note that there's a 100 char limit; should
+  // chunk on sentences.
   var text = encodeURIComponent(request.text);
   var url = 'http://translate.google.com/translate_tts?ie=UTF-8&tl='
             + settings.get('srcLang')
             + '&total=1&idx=0&textlen=77&client=t&prev=input&q='
             + text;
   console.log("vocalizing", url);
-  var audio = new Audio(url);
-  audio.play();
+  ChromeBabelFrog.play(url);
 });
 
 /**
