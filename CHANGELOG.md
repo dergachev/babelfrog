@@ -1,5 +1,21 @@
 # BabelFrog Changelog
 
+## [0.0.5](https://github.com/dergachev/babelfrog/compare/v0.0.4...v0.0.5) (July 2, 2014)
+
+BUGFIXES:
+
+- 9a9b55d Prevent vocalization of two phrases at once
+- 5a27340 Fix permission syntax in manifest.json; refs #2
+
+IMPROVEMENTS:
+
+- d2f6cf9 Improved tooltip colors via CSS
+- 2ccf62a Made shortcut Ctl+E/Cmd+E (previously Ctrl+B/Cmd+B, which conflicted with Bold)
+
+FEATURES:
+
+- 37d01fb Added activation via context menu; smarter tracking of activated tabs
+
 ## [0.0.4](https://github.com/dergachev/babelfrog/compare/v0.0.3...v0.0.4) (June 23, 2014)
 
 IMPROVEMENTS:
@@ -12,7 +28,7 @@ FEAUTURES:
 
 ## [0.0.3](https://github.com/dergachev/babelfrog/compare/v0.0.2...v0.0.3) (June 19, 2014)
 
-IMPROVEMENTS
+IMPROVEMENTS:
 
 - ba0cae8 Overhaul of tooltip positioning
 - d4c2957 Improved style of tooltip; no longer displays source text

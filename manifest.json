@@ -1,6 +1,6 @@
 {
   "name": "BabelFrog",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "manifest_version": 2,
   "description": "Helps you learn a new language by translating selected text",
   "homepage_url": "http://github.com/dergachev/babelfrog",
