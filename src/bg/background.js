@@ -121,9 +121,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 chrome.runtime.onInstalled.addListener(function() {
   chrome.contextMenus.create({
-    title: "BabelFrog",
+    title: "Translate with BabelFrog",
     "contexts": ["all"],
-    "id": "BabelFrog",
+    "id": "BabelFrog"
   });
 });
 
