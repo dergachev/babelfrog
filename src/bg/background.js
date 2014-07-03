@@ -66,6 +66,12 @@ ChromeBabelFrog.activate = function(tab) {
           tabId: tab.id,
           popup: 'src/options_custom/popup.html'
       });
+    } else {
+      // babelfrog is already activated, but might need to be re-triggered (eg in case of context menu)
+      chrome.tabs.sendMessage(tab.id, {
+        msgId: "bootBabelFrog",
+        config: ChromeBabelFrog.settings(settings)
+      });
     }
   });
 };

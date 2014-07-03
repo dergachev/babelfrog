@@ -56,8 +56,6 @@ BabelFrog.init = function(){
       BabelFrog.translateListener(event);
     }, 10);
   });
-
-  jQuery('body').trigger({ type: 'mouseup', button: 0 });
 };
 
 BabelFrog.setConfig = function(config){
@@ -77,8 +75,12 @@ BabelFrog.setConfig = function(config){
 
 // TODO: update bookmarklet index.html to call boot in the new style, pass in API key
 BabelFrog.boot = function(){
-  BabelFrog.init();
-  BabelFrog.showMessage('Loading complete, select a phrase to translate it. Alt-click a link to translate its text.');
+  if (!BabelFrog.running) {
+    BabelFrog.running = true;
+    BabelFrog.init();
+    BabelFrog.showMessage('Loading complete, select a phrase to translate it. Alt-click a link to translate its text.');
+  }
+  BabelFrog.processSelection();
 },
 
 
@@ -199,42 +201,38 @@ BabelFrog.drawRectangles = function(rects) {
 // Listener
 //============================================================================
 
+
 BabelFrog.translateListener = function(event){
-
-  var currentJob = BabelFrog.currentJob;
-
   // only pay attention to left-clicks
   if (event.button!==0) {
     return;
   }
+  // manually select alt-clicked link's text; see http://stackoverflow.com/a/14295222/9621
+  if (event.altKey && event.target.nodeName == 'A') {
+    var r = rangy.createRange(),
+        sel = rangy.getSelection();
+    r.selectNodeContents(event.target);
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
+
+  BabelFrog.processSelection();
+}
+
+BabelFrog.processSelection = function() {
 
   // no text is selected
   if (rangy.getSelection().isCollapsed){
-    if (event.altKey && event.target.nodeName == 'A') {
-      // manually select alt-clicked link's text; see http://stackoverflow.com/a/14295222/9621
-      var r = rangy.createRange(),
-          sel = rangy.getSelection();
-      r.selectNodeContents(event.target);
-      sel.removeAllRanges();
-      sel.addRange(r);
-      currentJob.range = r;
-    }
-    else {
-      return;
-    }
-  }
-  // if there is a selection, push it to its bounding limits
-  else {
-    var r = rangy.getSelection().getRangeAt(0);
-    BabelFrog.expandToWordBoundary(r);
-    rangy.getSelection().setSingleRange(r);
-    currentJob.range = r;
-  }
-
-  if (currentJob.range===null){
-    rangy.getSelection().removeAllRanges();
     return;
   }
+
+  // if there is a selection, push it to its bounding limits
+  var r = rangy.getSelection().getRangeAt(0);
+  BabelFrog.expandToWordBoundary(r);
+  rangy.getSelection().setSingleRange(r);
+
+  var currentJob = BabelFrog.currentJob;
+  currentJob.range = r;
 
   // Instead of currentJob.range.toString(), we use the native method as its closer
   // to what the user expects than the rangy version.
