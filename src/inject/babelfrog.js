@@ -154,16 +154,18 @@ BabelFrog.filterSelection = function(text) {
 
 // helper function for translateListener, pushes a range to its boundaries
 BabelFrog.expandToWordBoundary = function(range){
-  var nonBoundaryPattern = /[^\s:!.,\"\(\)«»%$]/,
-      startNodeValue = range.startContainer.nodeValue,
-      endNodeValue = range.endContainer.nodeValue,
-      start= range.startOffset,
-      end = range.endOffset;
+  // TODO: find a cleaner (unicode aware) way of doing this.
 
-  while (start > 0 && startNodeValue && nonBoundaryPattern.test(startNodeValue[start-1])){
+  var nonBoundaryPattern = /[^\s:!.,\"\(\)«»%$]/, // any character except punctuation or space
+      startNodeValue = range.startContainer.nodeValue,  //text contents of startContainer
+      endNodeValue = range.endContainer.nodeValue,  //text contents of endContainer
+      start = range.startOffset, //position of start of selection in startContainer; runs between 0 and length-1
+      end = range.endOffset; //position of end of selection in endContainer; runs between 1 and length
+
+  while (start > 0 && nonBoundaryPattern.test(startNodeValue[start-1])){
     start--;
   }
-  while (endNodeValue && end < endNodeValue.length-1 && nonBoundaryPattern.test(endNodeValue[end])){
+  while (end < endNodeValue.length && nonBoundaryPattern.test(endNodeValue[end])){
     end++;
   }
   range.setStart(range.startContainer,start);
