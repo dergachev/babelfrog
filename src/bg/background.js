@@ -125,6 +125,10 @@ chrome.runtime.onInstalled.addListener(function() {
     "contexts": ["all"],
     "id": "BabelFrog"
   });
+
+  // TODO: consider opening up the settings page on install
+  // chrome.tabs.create({url: chrome.extension.getURL('src/options_custom/index.html')});
+
 });
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
