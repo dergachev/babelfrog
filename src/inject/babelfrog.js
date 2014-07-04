@@ -162,11 +162,15 @@ BabelFrog.expandToWordBoundary = function(range){
       start = range.startOffset, //position of start of selection in startContainer; runs between 0 and length-1
       end = range.endOffset; //position of end of selection in endContainer; runs between 1 and length
 
-  while (start > 0 && nonBoundaryPattern.test(startNodeValue[start-1])){
-    start--;
+  if (startNodeValue) {
+    while (start > 0 && nonBoundaryPattern.test(startNodeValue[start-1])){
+      start--;
+    }
   }
-  while (end < endNodeValue.length && nonBoundaryPattern.test(endNodeValue[end])){
-    end++;
+  if (endNodeValue) {
+    while (end < endNodeValue.length && nonBoundaryPattern.test(endNodeValue[end])){
+      end++;
+    }
   }
   range.setStart(range.startContainer,start);
   range.setEnd(range.endContainer,end);
