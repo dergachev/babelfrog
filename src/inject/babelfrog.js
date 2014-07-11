@@ -1,4 +1,4 @@
-BabelFrog = function(){};
+var BabelFrog = BabelFrog || function(){};
 
 //============================================================================
 // State
@@ -43,18 +43,54 @@ BabelFrog.init = function(){
     }
   });
 
+  var isBabelFrogBox = function(target) {
+    var target = jQuery(target);
+    return (target.attr('id') == 'BabelFrog-box' || target.parents('#BabelFrog-box').length);
+  }
+
   // clear result box on any click (mousedown)
-  jQuery('body').mousedown(function(){
-    BabelFrog.hideTooltip();
+  jQuery('body').mousedown(function(event){
+    // only act on left clicks (on osx, ctrlKey triggers contextMenu too)
+    if (event.which != 1 || event.ctrlKey) {
+      return true;
+    }
+    console.log("MOUSEDOWN", event);
+    if (isBabelFrogBox(event.target)) {
+      // if still collapsed, click should expand
+      if (jQuery('#BabelFrog-box div.collapsed').length) {
+        jQuery('#BabelFrog-box div.collapsed').removeClass('collapsed');
+        event.preventDefault(); // otherwise click forces active selection to clear
+        return true;
+      } else {
+        // if already collapsed (and click not on link), dismiss box
+        if (event.target.nodeName == "A") {
+          return true;
+        } else {
+          // fall through, to dismiss box
+        }
+      }
+    }
+    // if we get this far, dismiss box
+    if (jQuery('#BabelFrog-box').length) {
+      // Clear active selection.
+      rangy.getSelection().removeAllRanges();
+      BabelFrog.hideTooltip();
+    }
   });
 
   // display translation of selection (mouseup)
   jQuery('body').mouseup(function(event){
-    // Due to race condition triggered by re-clicking on existing selection,
-    // we need to add a tiny timeout; see https://code.google.com/p/rangy/issues/detail?id=175
-    window.setTimeout(function(){
-      BabelFrog.translateListener(event);
-    }, 10);
+    if (event.which != 1 || event.ctrlKey) {
+      return true;
+    }
+    if (!isBabelFrogBox(event.target)) {
+      // Due to race condition triggered by re-clicking on existing selection,
+      // we need to add a tiny timeout; see https://code.google.com/p/rangy/issues/detail?id=175
+      window.setTimeout(function(){
+        BabelFrog.translateListener(event);
+      }, 10);
+    }
+
   });
 };
 
@@ -78,7 +114,7 @@ BabelFrog.boot = function(){
   if (!BabelFrog.running) {
     BabelFrog.running = true;
     BabelFrog.init();
-    BabelFrog.showMessage('Loading complete, select a phrase to translate it. Alt-click a link to translate its text.');
+    BabelFrog.showMessage('BabelFrog is activated. Select a phrase to translate it. Alt-click a link to translate its text.');
   }
   BabelFrog.processSelection();
 },
@@ -89,29 +125,74 @@ BabelFrog.boot = function(){
 //============================================================================
 
 BabelFrog.callbacks = {};
-BabelFrog.callbacks.standardSuccessCallback = function(translation) {
+
+/**
+ * Handles displaying results from translation engine.
+ * @param {string} text - The results from the translation engine.
+ * @param {array} expanded - The array of html strings to display on expansion.
+ */
+BabelFrog.callbacks.standardSuccessCallback = function(translation, expanded) {
+  var currentJob = BabelFrog.currentJob,
+      text = currentJob.text;
+
   //TODO: simplify this
-  var currentJob = BabelFrog.currentJob;
   currentJob.translation = translation;
-  BabelFrog.showTooltip(currentJob.text, currentJob.translation, currentJob.x, currentJob.y);
+
+  var fromCode = BabelFrog.config.source,
+      toCode = BabelFrog.config.target,
+      lingueeUrl = BabelFrog.getLingueeUrl(fromCode, toCode, currentJob.text);
+      gtUrl = BabelFrog.getGoogleTranslateUrl(fromCode, toCode, currentJob.text);
+
+  if (expanded.length) {
+    currentJob.translation = currentJob.translation + "<div class='ellipsis'>…</div>";
+  }
+
+  expanded = expanded || [];
+  expanded.push('<a target="_blank" href="' + gtUrl + '">G</a>');
+  if (lingueeUrl) { // linguee doesn't support all language pairs
+    expanded.push('<a target="_blank" href="' + lingueeUrl + '">ℒ</a>');
+  }
+
+  console.log("BabelFrog has received translation for the following text:");
+  console.log(text);
+
+  BabelFrog.showTooltipExpanded(currentJob.translation, expanded, currentJob.x, currentJob.y);
 };
 
+/**
+ * Handles displaying error from translation engine.
+ * @param {string} errorMessage - The error message from the translation engine.
+ */
 BabelFrog.callbacks.standardErrorCallback = function(errorMessage){
   BabelFrog.showMessage(errorMessage);
 }
+
 
 //============================================================================
 // Tooltip/message helpers
 //============================================================================
 
-BabelFrog.showTooltip = function(text, translation, x, y){
+BabelFrog.getGoogleTranslateUrl = function(fromCode, toCode, query) {
+  query = encodeURIComponent(query);
+  return "http://translate.google.com#" + fromCode + "/" + toCode + "/" + query;
+}
+
+/**
+ * Display BabelFrog tooltip with click to expand.
+ * @param {string} text - The contents of the tooltip.
+ * @param {expanded} html - The html or jquery div to show in initially collapsed state.
+ * @param {int} x - The x-coordinate of tooltip, relative to screen.
+ * @param {int} y - The y-coordinate of tooltip, relative to screen.
+ */
+BabelFrog.showTooltipExpanded = function(translation, expanded, x, y){
   BabelFrog.hideTooltip();
-  var a = jQuery('<p class="translation">' + translation + '</p>');
-  console.log("BabelFrog is submitting the following text for translation:");
-  console.log(text);
 
   var el = jQuery('<div id="BabelFrog-box" class="BabelFrog-box">')
-    .html(a.html());
+    .html(translation);
+
+  if (expanded) {
+    jQuery('<div class="expanded collapsed">').append(expanded).appendTo(el);
+  }
 
   BabelFrog.drawOverlay(el, x -5, y + 3);
 };
@@ -136,8 +217,8 @@ BabelFrog.hideTooltip = function() {
 }
 
 BabelFrog.showMessage = function(message) {
-  BabelFrog.showTooltip(message, 'BabelFrog Loaded', 10, 10);
-  jQuery('.BabelFrog-box').fadeOut(3000 || 0, function(){
+  BabelFrog.showTooltipExpanded(message, null, 10, 10);
+  jQuery('.BabelFrog-box').fadeOut(5000 || 0, function(){
     jQuery(this).remove();
   });
 }
@@ -211,7 +292,7 @@ BabelFrog.drawRectangles = function(rects) {
 BabelFrog.translateListener = function(event){
   // only pay attention to left-clicks
   if (event.button!==0) {
-    return;
+    return false;
   }
   // manually select alt-clicked link's text; see http://stackoverflow.com/a/14295222/9621
   if (event.altKey && event.target.nodeName == 'A') {
@@ -331,6 +412,7 @@ BabelFrog.engines.googleTranslateFree = function(sourceText){
 
       if (response && response.sentences && response.sentences.length > 0) {
         var ret = [];
+        var expandRet = [];
         for (var i = 0; i < response.sentences.length; i++) {
           ret.push(response.sentences[i].trans);
         }
@@ -338,19 +420,22 @@ BabelFrog.engines.googleTranslateFree = function(sourceText){
 
         // google translate sends us definitions only if a single word is searched for
         if (response.dict) {
-          var dictRet = [];
           for (var i = 0; i < response.dict.length; i++) {
-            var def = response.dict[i];
-            var base = def.base_form,
+            var def = response.dict[i],
+                base = def.base_form,
                 type = def.pos,
                 terms = def.terms.join(", ");
 
-            dictRet.push("<em>(" + type + ")</em> " + def.terms.join(", "));
+            // Special case: omit definitions that are identical to translation.
+            if (terms != ret) {
+              expandRet.push("<em>(" + type + ")</em> " + def.terms.join(", "));
+            }
           }
-
-          ret = ret + "<br/><br/>" + dictRet.join("<br/>");
         }
-        BabelFrog.config.successCallback(ret);
+        if (expandRet.length) {
+          expandRet = ["<ul class='dict'><li>" + expandRet.join("</li><li>") + "</li></ul>"];
+        }
+        BabelFrog.config.successCallback(ret, expandRet);
         return;
       }
 

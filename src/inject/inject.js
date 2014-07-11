@@ -20,8 +20,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 function makeConfig(config){
 
   // Override standardSuccesCallback to also play audio.
-  var extensionSuccessCallback = function(translation) {
-    BabelFrog.callbacks.standardSuccessCallback(translation);
+  var extensionSuccessCallback = function(translation, expanded) {
+    BabelFrog.callbacks.standardSuccessCallback(translation, expanded);
     if (BabelFrog.config.vocalize) {
       console.log('sending message vocalize');
       // vocalize must be run from background.js

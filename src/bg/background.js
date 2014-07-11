@@ -49,7 +49,7 @@ ChromeBabelFrog.activate = function(tab) {
 
       ChromeBabelFrog.setBadge(tab.id);
 
-      var files = ["src/inject/jquery.min.js", "src/inject/rangy-core.js","src/inject/babelfrog.js"];
+      var files = ["src/inject/jquery.min.js", "src/inject/rangy-core.js", "src/inject/linguee.js", "src/inject/babelfrog.js"];
       for (var i = 0; i < files.length; i++) {
         chrome.tabs.executeScript(tab.id, {file: files[i]});
       }

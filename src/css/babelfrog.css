@@ -1,4 +1,4 @@
-#BabelFrog-box, #BabelFrog-box p.translation {
+#BabelFrog-box {
   background-color: #e6ffb3 !important;  /* light blue */
   color:  black !important;
   border-radius: 5px !important;
@@ -14,6 +14,7 @@
   margin: 0px 10px 10px -5px !important;
   white-space:  pre-line !important;
   z-index: 2147483647 !important;
+  cursor: pointer !important;
 }
 
 /* higher contrast than browser default selection styling */
@@ -25,4 +26,43 @@ body ::selection {
 /* when holding alt-key over link, charge cursor */
 body.BabelFrog-alt-held a {
   cursor:help !important;
+}
+
+/**
+ * Support for div.expanded.
+ */
+
+#BabelFrog-box div.expanded.collapsed {
+  display: none !important;
+}
+
+#BabelFrog-box div.expanded {
+  margin-top: 12px !important;
+}
+
+#BabelFrog-box div.expanded ul.dict {
+  list-style-type: none !important;
+  padding-left: 0 !important;
+  margin-bottom: 10px !important;
+  font-size: 13px !important;
+}
+
+#BabelFrog-box div.expanded a {
+  background-color: black !important;
+  color: #fffddd !important;
+  border-radius: 2px !important;
+  padding: 2px 10px !important;
+  margin: 2px 4px 2px 0px !important;
+  text-decoration: none !important;
+}
+
+#BabelFrog-box div.expanded a:hover {
+  background-color: blue !important;
+}
+
+#BabelFrog-box div.ellipsis {
+  clear: both !important;
+  height: 1px !important;
+  border-bottom: 1px dotted gray !important;
+  color: #fffddd !important;
 }
