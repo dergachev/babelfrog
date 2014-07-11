@@ -22,6 +22,14 @@ BabelFrog.currentJob = {
 BabelFrog.init = function(){
   rangy.init();
 
+  // dismiss tooltip on [Esc] keypress
+  jQuery(document).keyup(function(e) {
+    var KEYCODE_ESC = 27;
+    if (e.keyCode == KEYCODE_ESC) {
+      BabelFrog.hideTooltip();
+    }
+  });
+
   jQuery("body").keydown(function(event) {
     // trap only Alt key
     if (event.keyCode == 18) {
