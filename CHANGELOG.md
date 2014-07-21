@@ -1,5 +1,20 @@
 # BabelFrog Changelog
 
+## [0.0.6](https://github.com/dergachev/babelfrog/compare/v0.0.5...v0.0.6) (July 21, 2014)
+
+BUGFIXES:
+
+- fc6c10d Fix bug in BabelFrog.expandToWordBoundary;
+- 9a2b78c Fixed errors in BabelFrog.expandToWordBoundary
+
+IMPROVEMENTS:
+
+- 3be2274 Pressing escape dismisses tooltip.
+- 5234a55 Clicking expands tooltip to presents linguee links.
+- 22dde98 Refactored BabelFrog.activate and BabelFrog.eventListener
+- 44f0b93 Added TODO: consider opening up settings page on install
+- faf7383 Changed context menu text to 'Translate with BabelFrog'
+
 ## [0.0.5](https://github.com/dergachev/babelfrog/compare/v0.0.4...v0.0.5) (July 2, 2014)
 
 BUGFIXES:
