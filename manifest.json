@@ -28,7 +28,7 @@
   "permissions": [
     "activeTab",
     "contextMenus",
-    "http://translate.google.com/*"
+    "https://translate.google.com/*"
   ],
   "commands": {
     "_execute_browser_action": {

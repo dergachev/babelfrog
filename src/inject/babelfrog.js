@@ -182,7 +182,7 @@ BabelFrog.callbacks.standardErrorCallback = function(errorMessage){
 
 BabelFrog.getGoogleTranslateUrl = function(fromCode, toCode, query) {
   query = encodeURIComponent(query);
-  return "http://translate.google.com#" + fromCode + "/" + toCode + "/" + query;
+  return "https://translate.google.com#" + fromCode + "/" + toCode + "/" + query;
 }
 
 /**
@@ -413,7 +413,7 @@ BabelFrog.engines.googleTranslate = function(sourceText){
 // Potentially illegitimate use of non-public API; but many other extensions use it too.
 BabelFrog.engines.googleTranslateFree = function(sourceText){
   jQuery.ajax({
-    url:'http://translate.google.com/translate_a/t',
+    url:'https://translate.google.com/translate_a/t',
     type: 'GET',
     dataType: 'json',
     success: function(response){
