@@ -1,5 +1,11 @@
 # BabelFrog Changelog
 
+## [0.0.7](https://github.com/dergachev/babelfrog/compare/v0.0.6...v0.0.7) (November 10, 2014)
+
+BUGFIXES:
+
+- e2851fc Switch to HTTPS://translate.google.com
+
 ## [0.0.6](https://github.com/dergachev/babelfrog/compare/v0.0.5...v0.0.6) (July 21, 2014)
 
 BUGFIXES:
