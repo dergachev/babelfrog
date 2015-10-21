@@ -1,5 +1,13 @@
 # BabelFrog Changelog
 
+## [0.0.8](https://github.com/dergachev/babelfrog/compare/v0.0.7...v0.0.8) (October 21, 2015)
+
+- 4385e54 Fix XHR error related to captcha by mimicking official chrome GT extension
+
+BUGFIXES:
+
+- e2851fc Switch to HTTPS://translate.google.com
+
 ## [0.0.7](https://github.com/dergachev/babelfrog/compare/v0.0.6...v0.0.7) (November 10, 2014)
 
 BUGFIXES:
