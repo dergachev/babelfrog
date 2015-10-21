@@ -413,7 +413,7 @@ BabelFrog.engines.googleTranslate = function(sourceText){
 // Potentially illegitimate use of non-public API; but many other extensions use it too.
 BabelFrog.engines.googleTranslateFree = function(sourceText){
   jQuery.ajax({
-    url:'https://translate.google.com/translate_a/t',
+    url:'https://translate.google.com/translate_a/single',
     type: 'GET',
     dataType: 'json',
     success: function(response){
@@ -459,13 +459,14 @@ BabelFrog.engines.googleTranslateFree = function(sourceText){
       BabelFrog.config.errorCallback("Google Translate XHR error: <br/>"  + status);
     },
     data: {
-      client:'p',
-      hl:'en',
-      sc:'2',
-      ie:'UTF-8',
-      oe:'UTF-8',
-      ssel:'0',
-      tsel:'0',
+      // appear as the official Google Translate chrome extension
+      client:'gtx',
+      hl:'en-US',
+      source:'bubble',
+      tk: (Math.floor((new Date).getTime() / 36E5) ^ 123456) + "|" + (Math.floor((Math.sqrt(5) - 1) / 2 * ((Math.floor((new Date).getTime() / 36E5) ^ 123456) ^ 654321) % 1 * 1048576)),
+      dt: 'bd',
+      dt: 't',
+      dj: 1,
       sl: BabelFrog.config.source,
       tl: BabelFrog.config.target,
       q: sourceText
