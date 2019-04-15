@@ -149,3 +149,36 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
   ChromeBabelFrog.activate(tab);
 });
 
+/**
+ * Google translate service request.
+ */
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  // flag to designate type of message
+  if (request.msgId != 'googleTranslate') {
+    return;
+  }
+
+  var ajax = new XMLHttpRequest();
+  var serviceUrl = request.url + "?" + request.params;
+
+  ajax.open("GET", serviceUrl, true);
+  ajax.send();
+
+  ajax.onreadystatechange = function() {
+    var result = {};
+    if (ajax.readyState === 4) {
+      if (ajax.status === 200) {
+        result.status = true;
+        result.data = ajax.responseText;
+      } else {
+        result.status = false;
+        result.message = ajax.statusText;
+      }
+      sendResponse(result);
+    }
+  }
+
+  // Will respond asynchronously.
+  return true;
+});
+

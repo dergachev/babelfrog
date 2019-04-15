@@ -412,12 +412,29 @@ BabelFrog.engines.googleTranslate = function(sourceText){
 
 // Potentially illegitimate use of non-public API; but many other extensions use it too.
 BabelFrog.engines.googleTranslateFree = function(sourceText){
-  jQuery.ajax({
-    url:'https://translate.google.com/translate_a/single',
-    type: 'GET',
-    dataType: 'json',
-    success: function(response){
+  var url = 'https://translate.google.com/translate_a/single',
+    urlParams = {
+      // appear as the official Google Translate chrome extension
+      client: 'gtx',
+      hl: 'en-US',
+      source: 'bubble',
+      tk: (Math.floor((new Date).getTime() / 36E5) ^ 123456) + "|" + (Math.floor((Math.sqrt(5) - 1) / 2 * ((Math.floor((new Date).getTime() / 36E5) ^ 123456) ^ 654321) % 1 * 1048576)),
+      dt: 'bd',
+      dt: 't',
+      dj: 1,
+      sl: BabelFrog.config.source,
+      tl: BabelFrog.config.target,
+      q: sourceText,
+    };
 
+  chrome.runtime.sendMessage({
+    msgId: "googleTranslate",
+    url: url,
+    params: $.param(urlParams),
+  }, function (result) {
+    // If request was successful.
+    if (result.status) {
+      var response = JSON.parse(result.data);
       if (response && response.sentences && response.sentences.length > 0) {
         var ret = [];
         var expandRet = [];
@@ -454,22 +471,10 @@ BabelFrog.engines.googleTranslateFree = function(sourceText){
       else {
         BabelFrog.config.errorCallback('Google Translate: unable to parse response.');
       }
-    },
-    error: function(xhr, status){
-      BabelFrog.config.errorCallback("Google Translate XHR error: <br/>"  + status);
-    },
-    data: {
-      // appear as the official Google Translate chrome extension
-      client:'gtx',
-      hl:'en-US',
-      source:'bubble',
-      tk: (Math.floor((new Date).getTime() / 36E5) ^ 123456) + "|" + (Math.floor((Math.sqrt(5) - 1) / 2 * ((Math.floor((new Date).getTime() / 36E5) ^ 123456) ^ 654321) % 1 * 1048576)),
-      dt: 'bd',
-      dt: 't',
-      dj: 1,
-      sl: BabelFrog.config.source,
-      tl: BabelFrog.config.target,
-      q: sourceText
+    }
+    else {
+      BabelFrog.config.errorCallback("Google Translate XHR error: <br/>"  + result.message);
     }
   });
+
 }
