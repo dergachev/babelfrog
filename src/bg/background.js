@@ -158,10 +158,32 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return;
   }
 
-  var ajax = new XMLHttpRequest();
-  var serviceUrl = request.url + "?" + request.params;
+  httpGetRequest(request.url, request.params, sendResponse);
 
-  ajax.open("GET", serviceUrl, true);
+  // Will respond asynchronously.
+  return true;
+});
+
+/**
+ * Ajax call wrapper.
+ *
+ * @arg string url
+ *   Request URL without parameters.
+ * @arg object params
+ *   Get request data in value-key pairs.
+ * @arg function callback
+ *   The callback function with one object argument, the response.
+ */
+function httpGetRequest(url, params, callback) {
+  var ajax = new XMLHttpRequest();
+  var paramsAux = [];
+
+  // Transform object into an array.
+  for (var key in params) {
+    paramsAux.push(key + '=' + encodeURIComponent(params[key]));
+  }
+
+  ajax.open('GET', url + '?' + paramsAux.join('&'), true);
   ajax.send();
 
   ajax.onreadystatechange = function() {
@@ -174,11 +196,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         result.status = false;
         result.message = ajax.statusText;
       }
-      sendResponse(result);
+      result.code = ajax.status;
+      callback(result);
     }
-  }
-
-  // Will respond asynchronously.
-  return true;
-});
-
+  };
+}

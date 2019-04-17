@@ -430,7 +430,7 @@ BabelFrog.engines.googleTranslateFree = function(sourceText){
   chrome.runtime.sendMessage({
     msgId: "googleTranslate",
     url: url,
-    params: $.param(urlParams),
+    params: urlParams,
   }, function (result) {
     // If request was successful.
     if (result.status) {
