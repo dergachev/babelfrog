@@ -1,5 +1,11 @@
 # BabelFrog Changelog
 
+## [0.0.9](https://github.com/dergachev/babelfrog/compare/v0.0.8...v0.0.9) (April 20, 2019)
+
+- 346a26d Wrap  ajax in a reusable function; refs #18072
+- 1b641d1 Fix Chrome 73 cross-origin preventing ajax
+- a032ba6 Fix for vocalization autoplay
+
 ## [0.0.8](https://github.com/dergachev/babelfrog/compare/v0.0.7...v0.0.8) (October 21, 2015)
 
 - 4385e54 Fix XHR error related to captcha by mimicking official chrome GT extension
