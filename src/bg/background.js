@@ -101,7 +101,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   var text = encodeURIComponent(request.text);
   var url = 'http://translate.google.com/translate_tts?ie=UTF-8&tl='
             + settings.get('srcLang')
-            + '&total=1&idx=0&textlen=77&client=babelfrog&prev=input&q='
+            + '&total=1&idx=0&textlen=77&client=gtx&prev=input&q='
             + text;
   console.log("vocalizing", url);
   ChromeBabelFrog.play(url);
